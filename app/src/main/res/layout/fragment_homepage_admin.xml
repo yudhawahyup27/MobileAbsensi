@@ -1,14 +1,311 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".admin.HomepageAdmin">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".admin.HomepageAdmin"
+    android:orientation="vertical"
+    android:paddingTop="15dp"
+    android:background="#eee">
+<!--Baris 1-->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:clipToPadding="false"
+        >
 
-</FrameLayout>
+    <!-- Menu 1-->
+  <androidx.cardview.widget.CardView
+        android:layout_width="150dp"
+        android:layout_height="190dp"
+        android:layout_margin="10dp"
+        android:clickable="true"
+        app:cardCornerRadius="20dp"
+        android:foreground="?attr/selectableItemBackground">
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+            >
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:padding="10dp"
+                    android:background="@drawable/lingkaranred"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/camera"
+                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:text="Absensi Masuk"
+                />
+            <View
+                android:layout_width="100dp"
+                android:layout_height="1dp"
+                android:background="@drawable/lingkaranred"
+                android:layout_marginTop="5dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/darker_gray"
+                android:text="Absensi Masuk"/>
+        </LinearLayout>
+         </androidx.cardview.widget.CardView>
+        <!-- Menu 1-->
+  <androidx.cardview.widget.CardView
+        android:layout_width="150dp"
+        android:layout_height="190dp"
+        android:layout_margin="10dp"
+        android:clickable="true"
+       app:cardCornerRadius="20dp"
+        android:foreground="?attr/selectableItemBackground">
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+            >
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:padding="10dp"
+                    android:background="@drawable/lingkarankuning"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/camera"
+                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:text="Absensi Keluar"
+                />
+            <View
+                android:layout_width="100dp"
+                android:layout_height="1dp"
+                android:background="@drawable/lingkarankuning"
+                android:layout_marginTop="5dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/darker_gray"
+                android:text="Absensi Keluar"/>
+        </LinearLayout>
+         </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+<!--Baris 2-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:clipToPadding="false"
+        >
+
+    <!-- Menu 1-->
+  <androidx.cardview.widget.CardView
+        android:layout_width="150dp"
+        android:layout_height="190dp"
+        android:layout_margin="10dp"
+        android:clickable="true"
+       app:cardCornerRadius="20dp"
+        android:foreground="?attr/selectableItemBackground">
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+            >
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:padding="10dp"
+                    android:background="@drawable/lingkaranblue"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/note"
+                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:text="History absensi"
+                />
+            <View
+                android:layout_width="100dp"
+                android:layout_height="1dp"
+                android:background="@drawable/lingkaranred"
+                android:layout_marginTop="5dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/darker_gray"
+                android:text="History Absensi"/>
+        </LinearLayout>
+         </androidx.cardview.widget.CardView>
+        <!-- Menu 1-->
+  <androidx.cardview.widget.CardView
+        android:layout_width="150dp"
+        android:layout_height="190dp"
+        android:layout_margin="10dp"
+        android:clickable="true"
+       app:cardCornerRadius="20dp"
+        android:foreground="?attr/selectableItemBackground">
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+            >
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:padding="10dp"
+                    android:background="@drawable/lingkaranred"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/camera"
+                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:text="Kelola Karyawan"
+                />
+            <View
+                android:layout_width="100dp"
+                android:layout_height="1dp"
+                android:background="@drawable/lingkaranred"
+                android:layout_marginTop="5dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/darker_gray"
+                android:text="Kelola Karyawan"/>
+        </LinearLayout>
+         </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+<!--Baris 1-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:clipToPadding="false"
+        >
+
+    <!-- Menu 1-->
+  <androidx.cardview.widget.CardView
+        android:layout_width="150dp"
+        android:layout_height="190dp"
+        android:layout_margin="10dp"
+        android:clickable="true"
+        app:cardCornerRadius="20dp"
+        android:foreground="?attr/selectableItemBackground">
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+            >
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:padding="10dp"
+                    android:background="@drawable/lingkaranred"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/camera"
+                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:text="Pengajuan Cuti"
+                />
+            <View
+                android:layout_width="100dp"
+                android:layout_height="1dp"
+                android:background="@drawable/lingkaranred"
+                android:layout_marginTop="5dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/darker_gray"
+                android:text="Pengajuan Cuti"/>
+        </LinearLayout>
+         </androidx.cardview.widget.CardView>
+        <!-- Menu 1-->
+  <androidx.cardview.widget.CardView
+        android:layout_width="150dp"
+        android:layout_height="190dp"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="20dp"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground">
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+            >
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:padding="10dp"
+                    android:background="@drawable/lingkaranred"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/camera"
+                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:text="Laporan Lembur"
+                />
+            <View
+                android:layout_width="100dp"
+                android:layout_height="1dp"
+                android:background="@drawable/lingkaranred"
+                android:layout_marginTop="5dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/darker_gray"
+                android:text="Laporan Lembur"/>
+        </LinearLayout>
+         </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+
+</LinearLayout>
