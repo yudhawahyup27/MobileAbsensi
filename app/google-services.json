@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1004020703566",
+    "project_id": "absensi-9d83c",
+    "storage_bucket": "absensi-9d83c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004020703566:android:c91ca72554c8c7226cbe1f",
+        "android_client_info": {
+          "package_name": "com.nairobi.absensi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1004020703566-7qnsr5ote75m1v8k6f4e0mppe3frh0fd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEG3WK5JKnDQUVBqf2q6x1br4BLyWVMTA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1004020703566-7qnsr5ote75m1v8k6f4e0mppe3frh0fd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
