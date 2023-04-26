@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,40 +18,54 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cn.pedant.SweetAlert.SweetAlertDialog
-import com.nairobi.absensi.models.Address
-import com.nairobi.absensi.models.OfficeData
-import com.nairobi.absensi.models.OfficeModel
-import com.nairobi.absensi.models.TimeData
+import com.nairobi.absensi.R
+import com.nairobi.absensi.types.Address
+import com.nairobi.absensi.types.Office
+import com.nairobi.absensi.types.OfficeModel
+import com.nairobi.absensi.types.Time
 import com.nairobi.absensi.ui.components.FormFieldLocation
 import com.nairobi.absensi.ui.components.FormFieldTime
 import com.nairobi.absensi.ui.components.SimpleAppbar
+import com.nairobi.absensi.ui.components.dialogError
+import com.nairobi.absensi.ui.components.dialogSuccess
 import com.nairobi.absensi.ui.theme.Purple
 
+// Manage Office
 @Composable
 fun ManageOffice(navController: NavController? = null) {
     val context = LocalContext.current
     var loaded by remember { mutableStateOf(false) }
     val model = OfficeModel()
-    var address by remember { mutableStateOf(TextFieldValue("")) }
-    var startTime by remember { mutableStateOf(TextFieldValue("")) }
-    var endTime by remember { mutableStateOf(TextFieldValue("")) }
+    var address by remember { mutableStateOf(Address()) }
+    var startTime by remember { mutableStateOf(Time()) }
+    var endTime by remember { mutableStateOf(Time()) }
 
+    LaunchedEffect(context.getString(R.string.manage_office)) {
+        model.getOffice {
+            address = it.address
+            startTime = it.startTime
+            endTime = it.endTime
+        }
+    }
+
+    // Column
     Column(
         Modifier
             .background(Color.White)
             .fillMaxSize()
     ) {
+        // Simple Appbar
         SimpleAppbar(
-            title = "Kelola Kantor",
+            title = context.getString(R.string.kelola_kantor),
             navController = navController,
             background = Purple,
             modifier = Modifier
                 .fillMaxWidth()
         )
+        // Content
         Column(
             Modifier
                 .padding(10.dp)
@@ -60,7 +75,7 @@ fun ManageOffice(navController: NavController? = null) {
             FormFieldLocation(
                 value = address,
                 onValueChange = { address = it },
-                label = "Alamat Kantor",
+                label = context.getString(R.string.alamat_kantor),
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -68,7 +83,7 @@ fun ManageOffice(navController: NavController? = null) {
             FormFieldTime(
                 value = startTime,
                 onValueChange = { startTime = it },
-                label = "Jam Mulai",
+                label = context.getString(R.string.jam_mulai),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp)
@@ -77,7 +92,7 @@ fun ManageOffice(navController: NavController? = null) {
             FormFieldTime(
                 value = endTime,
                 onValueChange = { endTime = it },
-                label = "Jam Selesai",
+                label = context.getString(R.string.jam_selesai),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp)
@@ -85,29 +100,29 @@ fun ManageOffice(navController: NavController? = null) {
             // Save Button
             Button(
                 onClick = {
-                    val data = OfficeData.empty()
-                    data.address = Address.fromAddressString(context, address.text)
-                    data.startTime = TimeData.fromString(startTime.text)
-                    data.endTime = TimeData.fromString(endTime.text)
+                    val data = Office()
+                    data.address = address
+                    data.startTime = startTime
+                    data.endTime = endTime
 
                     val loading = SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE)
-                    loading.setTitleText("Loading...")
+                    loading.setTitleText(context.getString(R.string.loading))
                     loading.setCancelable(false)
                     loading.show()
-                    model.setOfficeData(data) {
+                    model.updateOffice(data) {
                         loading.dismiss()
                         if (it) {
-                            SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
-                                .setTitleText("Berhasil")
-                                .setContentText("Data kantor berhasil disimpan")
-                                .setConfirmText("OK")
-                                .show()
+                            dialogSuccess(
+                                context,
+                                context.getString(R.string.sukses),
+                                context.getString(R.string.office_updated)
+                            )
                         } else {
-                            SweetAlertDialog(context, SweetAlertDialog.ERROR_TYPE)
-                                .setTitleText("Gagal")
-                                .setContentText("Data kantor gagal disimpan")
-                                .setConfirmText("OK")
-                                .show()
+                            dialogError(
+                                context,
+                                context.getString(R.string.gagal),
+                                context.getString(R.string.kesalahan_sistem)
+                            )
                         }
                     }
                 },
@@ -115,17 +130,8 @@ fun ManageOffice(navController: NavController? = null) {
                     .fillMaxWidth()
                     .padding(top = 50.dp)
             ) {
-                Text(text = "Simpan")
+                Text(context.getString(R.string.simpan))
             }
-        }
-    }
-
-    if (!loaded) {
-        loaded = true
-        model.getOfficeData {
-            address = TextFieldValue(it.address.toAddressString(context))
-            startTime = TextFieldValue(it.startTime.string())
-            endTime = TextFieldValue(it.endTime.string())
         }
     }
 }

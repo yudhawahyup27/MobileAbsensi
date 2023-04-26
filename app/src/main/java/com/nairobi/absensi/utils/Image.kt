@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
+import kotlin.math.sqrt
 
 // Convert Drawable to Bitmap
 fun bitmapFromDrawableRes(context: Context, @DrawableRes resourceId: Int) =
@@ -20,7 +21,7 @@ private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
     return if (sourceDrawable is BitmapDrawable) {
         sourceDrawable.bitmap
     } else {
-// copying drawable object to not manipulate on the same reference
+        // copying drawable object to not manipulate on the same reference
         val constantState = sourceDrawable.constantState ?: return null
         val drawable = constantState.newDrawable().mutate()
         val bitmap: Bitmap = Bitmap.createBitmap(

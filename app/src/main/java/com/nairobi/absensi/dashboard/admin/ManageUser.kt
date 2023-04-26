@@ -1,20 +1,22 @@
 package com.nairobi.absensi.dashboard.admin
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.nairobi.absensi.R
+import com.nairobi.absensi.types.UserRole
 import com.nairobi.absensi.ui.components.ManageTemplate
-import com.nairobi.absensi.utils.crashMe
 
 // Manage user
-@Preview
 @Composable
-fun ManageUser(navController: NavController? = null) {
+fun ManageUser(navController: NavController? = null, role: UserRole) {
+    val context = LocalContext.current
+    val text = if  (role == UserRole.ADMIN) context.getString(R.string.admin) else context.getString(R.string.user)
     ManageTemplate(
         navController,
-        "Kelola user",
-        filter = { !it.isAdmin() },
-        addRoute = "add_user",
-        editRoute = "edit_user"
+        "${context.getString(R.string.kelola)} $text",
+        filter = { if (role == UserRole.ADMIN) it.isAdmin else !it.isAdmin },
+        addRoute = "${context.getString(R.string.add_user)}/${role.name}",
+        editRoute = "${context.getString(R.string.edit_user)}/${role.name}"
     )
 }

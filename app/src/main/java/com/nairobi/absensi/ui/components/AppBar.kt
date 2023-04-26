@@ -20,7 +20,7 @@ import com.nairobi.absensi.R
 @Composable
 fun SimpleAppbar(
     navController: NavController? = null,
-    title: String = "Title",
+    title: String = "",
     background: Color = Color.Transparent,
     modifier: Modifier
 ) {

@@ -53,6 +53,13 @@ android {
 dependencies {
     def nav_version = "2.5.3"
 
+    implementation 'com.google.firebase:firebase-ml-vision-face-model:20.0.1'
+    implementation 'com.google.firebase:firebase-ml-vision:24.0.3'
+    implementation 'org.tensorflow:tensorflow-lite:2.11.0'
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.11.0'
+    implementation 'org.tensorflow:tensorflow-lite-gpu-api:2.11.0'
+    implementation 'org.tensorflow:tensorflow-lite-support:0.4.2'
+    implementation 'com.github.arturschaefer:liveness-camerax-android:0.0.1'
     implementation 'com.google.firebase:firebase-storage-ktx'
     implementation 'androidx.appcompat:appcompat-resources:1.6.1'
     implementation("com.google.android.gms:play-services-location:21.0.1")

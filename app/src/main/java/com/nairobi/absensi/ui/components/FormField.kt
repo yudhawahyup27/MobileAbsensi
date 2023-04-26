@@ -42,10 +42,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.nairobi.absensi.MapPick
-import com.nairobi.absensi.utils.getAddressFromLocation
-import com.nairobi.absensi.utils.getLocationFromAddress
-import com.nairobi.absensi.utils.getLocationFromLatLong
-import java.util.Date
+import com.nairobi.absensi.types.Address
+import com.nairobi.absensi.types.Date
+import com.nairobi.absensi.types.Time
 
 // FormField
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,8 +123,8 @@ fun FormField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormFieldDate(
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
+    value: Date,
+    onValueChange: (Date) -> Unit,
     modifier: Modifier = Modifier,
     label: String? = null,
     color: Color = Color.Black,
@@ -133,7 +132,7 @@ fun FormFieldDate(
     val context = LocalContext.current
 
     OutlinedTextField(
-        value = value,
+        value = value.string(),
         onValueChange = {},
         readOnly = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -163,16 +162,15 @@ fun FormFieldDate(
                 DatePickerDialog(
                     context,
                     { _, year, month, dayOfMonth ->
-                        val date: Date = Date(year, month, dayOfMonth)
-                        onValueChange(
-                            TextFieldValue(
-                                text = date.toString()
-                            )
-                        )
+                        val date = Date()
+                        date.year = year
+                        date.month = month
+                        date.day = dayOfMonth
+                        onValueChange(date)
                     },
-                    2021,
-                    1,
-                    1
+                    value.year,
+                    value.month,
+                    value.day
                 ).show()
             },
     )
@@ -182,8 +180,8 @@ fun FormFieldDate(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormFieldTime(
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
+    value: Time,
+    onValueChange: (Time) -> Unit,
     modifier: Modifier = Modifier,
     label: String? = null,
     color: Color = Color.Black,
@@ -191,7 +189,7 @@ fun FormFieldTime(
     val context = LocalContext.current
 
     OutlinedTextField(
-        value = value,
+        value = value.string(),
         onValueChange = {},
         readOnly = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -221,16 +219,13 @@ fun FormFieldTime(
                 TimePickerDialog(
                     context,
                     { _, hourOfDay, minute ->
-                        val hourString = if (hourOfDay < 10) "0$hourOfDay" else "$hourOfDay"
-                        val minuteString = if (minute < 10) "0$minute" else "$minute"
-                        onValueChange(
-                            TextFieldValue(
-                                text = "$hourString:$minuteString"
-                            )
-                        )
+                        val time = Time()
+                        time.hour = hourOfDay
+                        time.minute = minute
+                        onValueChange(time)
                     },
-                    0,
-                    0,
+                    value.hour,
+                    value.minute,
                     true
                 ).show()
             },
@@ -241,37 +236,24 @@ fun FormFieldTime(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormFieldLocation(
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
+    value: Address,
+    onValueChange: (Address) -> Unit,
     modifier: Modifier = Modifier,
     label: String? = null,
     color: Color = Color.Black,
 ) {
     val context = LocalContext.current
-    val lat = remember { mutableStateOf(0.0) }
-    val lng = remember { mutableStateOf(0.0) }
+
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            lat.value = it.data?.getDoubleExtra("lat", 0.0) ?: 0.0
-            lng.value = it.data?.getDoubleExtra("long", 0.0) ?: 0.0
-            val location = getLocationFromLatLong(lat.value, lng.value)
-            val address = getAddressFromLocation(context, location)
-            onValueChange(
-                TextFieldValue(
-                    text = address
-                )
-            )
+            val lat = it.data?.getDoubleExtra("lat", 0.0) ?: 0.0
+            val long = it.data?.getDoubleExtra("long", 0.0) ?: 0.0
+            val address = Address(lat, long)
+            onValueChange(address)
         }
-
-    if (value.text.isNotEmpty()) {
-        getLocationFromAddress(context, value.text).let {
-            lat.value = it.latitude
-            lng.value = it.longitude
-        }
-    }
 
     OutlinedTextField(
-        value = value,
+        value = value.string(context),
         onValueChange = {},
         readOnly = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -300,7 +282,7 @@ fun FormFieldLocation(
             .clickable {
                 // get result from activity
                 launcher.launch(
-                    MapPick.intent(context as ComponentActivity, lat.value, lng.value)
+                    MapPick.intent(context as ComponentActivity, value.latitude, value.longitude)
                 )
             },
     )

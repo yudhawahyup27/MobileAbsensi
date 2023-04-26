@@ -17,16 +17,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.nairobi.absensi.auth.Auth
-import com.nairobi.absensi.auth.LoginActivity
+import com.nairobi.absensi.types.Auth
 import com.nairobi.absensi.ui.theme.AbsensiTheme
-import com.nairobi.absensi.utils.showPermissionDialogAlert
 
+// Splash screen
 @SuppressLint("CustomSplashScreen")
 class SplashScreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,10 +37,6 @@ class SplashScreenActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        val granted = com.nairobi.absensi.utils.checkPermission(this)
-        if (!granted) {
-            showPermissionDialogAlert(this)
-        }
         Auth.init(this) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -74,6 +70,7 @@ class SplashScreenActivity : ComponentActivity() {
 // Composable splash screen
 @Composable
 fun SplashCompose(versionName: String) {
+    val context = LocalContext.current
     // Constraint layout
     ConstraintLayout(
         modifier = Modifier
@@ -97,7 +94,7 @@ fun SplashCompose(versionName: String) {
         )
         // Title
         Text(
-            text = "Absensi",
+            text = context.getString(R.string.app_name),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Gray,
@@ -110,7 +107,7 @@ fun SplashCompose(versionName: String) {
         )
         // Version
         Text(
-            text = "version $versionName",
+            text = context.getString(R.string.version, versionName),
             color = Color.Gray,
             modifier = Modifier
                 .padding(bottom = 20.dp)

@@ -9,6 +9,7 @@ val permissions = arrayOf(
     android.Manifest.permission.ACCESS_NETWORK_STATE,
     android.Manifest.permission.ACCESS_COARSE_LOCATION,
     android.Manifest.permission.ACCESS_FINE_LOCATION,
+    android.Manifest.permission.CAMERA,
 )
 
 // Dialog alert
@@ -21,6 +22,7 @@ fun showPermissionDialogAlert(context: Context) {
         requestPermission(context)
         it.dismissWithAnimation()
     }
+    dialog.show()
 }
 
 // Check permission
@@ -42,13 +44,6 @@ fun checkPermission(context: Context): Boolean {
 
 // Request permission
 fun requestPermission(context: Context) {
-    // Required permissions
-    val permissions = arrayOf(
-        android.Manifest.permission.INTERNET,
-        android.Manifest.permission.ACCESS_NETWORK_STATE,
-        android.Manifest.permission.ACCESS_COARSE_LOCATION,
-        android.Manifest.permission.ACCESS_FINE_LOCATION,
-    )
     // Request permission
     (context as android.app.Activity).requestPermissions(permissions, 0)
 }

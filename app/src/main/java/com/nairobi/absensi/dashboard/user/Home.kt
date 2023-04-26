@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Brush
@@ -31,14 +32,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.nairobi.absensi.R
-import com.nairobi.absensi.auth.Auth
+import com.nairobi.absensi.types.Auth
+import com.nairobi.absensi.ui.theme.Orange
 
 // Card button
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,12 +51,14 @@ fun CardButton(
     @DrawableRes background: Int,
     modifier: Modifier = Modifier
 ) {
+    // Card
     Card(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .height(125.dp)
     ) {
+        // Layout
         ConstraintLayout(
             Modifier
                 .fillMaxSize()
@@ -108,11 +111,14 @@ fun CardButton(
 }
 
 // Home Screen for User
-@Preview
 @Composable
 fun DashboardUserHome(navController: NavController? = null) {
     val context = LocalContext.current
 
+    LaunchedEffect(context.getString(R.string.checkAbsence)) {
+    }
+
+    // Layout
     ConstraintLayout(
         Modifier
             .fillMaxSize()
@@ -134,7 +140,7 @@ fun DashboardUserHome(navController: NavController? = null) {
             // Setting
             IconButton(
                 onClick = {
-                    navController?.navigate("profile")
+                    navController?.navigate(context.getString(R.string.profile))
                 },
                 modifier = Modifier
                     .constrainAs(setting) {
@@ -145,22 +151,22 @@ fun DashboardUserHome(navController: NavController? = null) {
             ) {
                 Icon(
                     Icons.Filled.Settings,
-                    contentDescription = "Setting",
+                    contentDescription = context.getString(R.string.setting),
                 )
             }
             // Logout
             IconButton(
                 onClick = {
                     SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("Apakah anda yakin?")
-                        .setContentText("Anda akan keluar dari aplikasi")
-                        .setConfirmText("Ya")
+                        .setTitleText(context.getString(R.string.keluar))
+                        .setContentText(context.getString(R.string.keluar_prompt))
+                        .setConfirmText(context.getString(R.string.ya))
                         .setConfirmClickListener { sDialog ->
                             sDialog.dismissWithAnimation()
                             Auth.logout()
                         }
                         .setCancelButton(
-                            "Tidak"
+                            context.getString(R.string.tidak)
                         ) { sDialog -> sDialog.dismissWithAnimation() }
                         .show()
                 },
@@ -173,7 +179,7 @@ fun DashboardUserHome(navController: NavController? = null) {
             ) {
                 Icon(
                     Icons.Filled.Logout,
-                    contentDescription = "Logout",
+                    contentDescription = context.getString(R.string.keluar),
                 )
             }
         }
@@ -191,7 +197,7 @@ fun DashboardUserHome(navController: NavController? = null) {
         ) {
             // Title
             Text(
-                "Selamat Datang",
+                context.getString(R.string.selamat_datang),
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
@@ -201,14 +207,14 @@ fun DashboardUserHome(navController: NavController? = null) {
             )
             // Subtitle
             Text(
-                "Absensi membutuhkan info lokasi dan verifikasi wajah.",
+                context.getString(R.string.user_home_header),
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 20.dp)
             )
-            // Navigations
+            // Navigation
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -218,9 +224,9 @@ fun DashboardUserHome(navController: NavController? = null) {
                 // Masuk
                 CardButton(
                     onClick = {
-                        navController?.navigate("work")
+                        navController?.navigate(context.getString(R.string.work))
                     },
-                    label = "Absen Masuk",
+                    label = context.getString(R.string.absen_masuk),
                     color = Color.Green,
                     background = R.drawable.ic_masuk,
                     modifier = Modifier
@@ -228,10 +234,10 @@ fun DashboardUserHome(navController: NavController? = null) {
                 // Lembur
                 CardButton(
                     onClick = {
-                        navController?.navigate("absen_lembur")
+                        navController?.navigate(context.getString(R.string.overtime))
                     },
-                    label = "Absen Lembur",
-                    color = Color.Yellow,
+                    label = context.getString(R.string.absen_lembur),
+                    color = Color.Blue,
                     background = R.drawable.ic_lembur,
                     modifier = Modifier
                         .padding(top = 40.dp)
@@ -239,10 +245,10 @@ fun DashboardUserHome(navController: NavController? = null) {
                 // Cuti
                 CardButton(
                     onClick = {
-                        navController?.navigate("absen_izin")
+                        navController?.navigate(context.getString(R.string.leave))
                     },
-                    label = "Izin Keluar",
-                    color = Color.Blue,
+                    label = context.getString(R.string.absen_cuti),
+                    color = Orange,
                     background = R.drawable.ic_izin,
                     modifier = Modifier
                         .padding(top = 40.dp)
@@ -250,9 +256,9 @@ fun DashboardUserHome(navController: NavController? = null) {
                 // Riwayat
                 CardButton(
                     onClick = {
-                        navController?.navigate("riwayat")
+                        navController?.navigate(context.getString(R.string.history))
                     },
-                    label = "Riwayat Absen",
+                    label = context.getString(R.string.riwayat_absen),
                     color = Color.Red,
                     background = R.drawable.ic_history,
                     modifier = Modifier

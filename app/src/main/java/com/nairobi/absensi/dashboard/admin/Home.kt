@@ -39,7 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cn.pedant.SweetAlert.SweetAlertDialog
-import com.nairobi.absensi.auth.Auth
+import com.nairobi.absensi.R
+import com.nairobi.absensi.types.Auth
 import com.nairobi.absensi.ui.theme.DarkGray
 import com.nairobi.absensi.ui.theme.Orange
 import com.nairobi.absensi.ui.theme.Purple40
@@ -131,21 +132,37 @@ fun DashboardAdminHome(navController: NavController? = null) {
         ) {
             // Manage admin
             CardButton(
-                name = "Admin",
+                name = context.getString(R.string.admin),
                 icon = Icons.Default.Settings,
                 color = Color.Red,
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { navController?.navigate("manage_admin") }
+                    .clickable {
+                        navController?.navigate(
+                            "${context.getString(R.string.manage_user)}/${
+                                context
+                                    .getString(R.string.admin)
+                                    .uppercase()
+                            }"
+                        )
+                    }
             )
             // Manage user
             CardButton(
-                name = "Karyawan",
+                name = context.getString(R.string.karyawan),
                 icon = Icons.Default.Person,
                 color = Color.Blue,
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { navController?.navigate("manage_user") }
+                    .clickable {
+                        navController?.navigate(
+                            "${context.getString(R.string.manage_user)}/${
+                                context
+                                    .getString(R.string.user)
+                                    .uppercase()
+                            }"
+                        )
+                    }
             )
         }
         // Row
@@ -157,21 +174,21 @@ fun DashboardAdminHome(navController: NavController? = null) {
         ) {
             // Manage absence
             CardButton(
-                name = "Absensi",
+                name = context.getString(R.string.absensi),
                 icon = Icons.Default.DateRange,
                 color = Color.Green,
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { navController?.navigate("manage_absence") }
+                    .clickable { navController?.navigate(context.getString(R.string.manage_absence)) }
             )
             // Manage leave
             CardButton(
-                name = "Cuti",
+                name = context.getString(R.string.cuti),
                 icon = Icons.Default.AddTask,
                 color = Orange,
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { navController?.navigate("manage_leave") }
+                    .clickable { navController?.navigate(context.getString(R.string.manage_leave)) }
             )
         }
         // Row
@@ -183,21 +200,21 @@ fun DashboardAdminHome(navController: NavController? = null) {
         ) {
             // Manage overtime
             CardButton(
-                name = "Lembur",
+                name = context.getString(R.string.lembur),
                 icon = Icons.Default.Bedtime,
                 color = Purple40,
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { navController?.navigate("manage_overtime") }
+                    .clickable { navController?.navigate(context.getString(R.string.manage_overtime)) }
             )
             // Manage office
             CardButton(
-                name = "Kantor",
+                name = context.getString(R.string.kantor),
                 icon = Icons.Default.Domain,
                 color = Color.Cyan,
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { navController?.navigate("manage_office") }
+                    .clickable { navController?.navigate(context.getString(R.string.manage_office)) }
             )
         }
         // Row
@@ -209,20 +226,20 @@ fun DashboardAdminHome(navController: NavController? = null) {
         ) {
             // Logout
             CardButton(
-                name = "Logout",
+                name = context.getString(R.string.keluar),
                 icon = Icons.Default.Logout,
                 color = DarkGray,
                 modifier = Modifier
                     .weight(1f)
                     .clickable {
                         SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
-                            .setTitleText("Logout")
-                            .setContentText("Apakah anda yakin ingin keluar?")
-                            .setConfirmText("Ya")
+                            .setTitleText(context.getString(R.string.keluar))
+                            .setContentText(context.getString(R.string.keluar_prompt))
+                            .setConfirmText(context.getString(R.string.ya))
                             .setConfirmClickListener {
                                 Auth.logout()
                             }
-                            .setCancelText("Tidak")
+                            .setCancelText(context.getString(R.string.tidak))
                             .show()
                     }
             )
