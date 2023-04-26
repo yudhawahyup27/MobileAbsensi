@@ -57,6 +57,7 @@ fun ManageAbsence(navController: NavController? = null) {
     ) {
         // Simple Appbar
         SimpleAppbar(
+            navController = navController,
             title = context.getString(R.string.absensi),
             background = Purple,
             modifier = Modifier

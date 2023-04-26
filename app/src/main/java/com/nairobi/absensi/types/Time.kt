@@ -67,4 +67,15 @@ class Time(
         cal2.set(Calendar.MINUTE, time.minute)
         return cal1.after(cal2)
     }
+
+    // Get how many minutes between time and another time
+    fun distance(time: Time): Long {
+        val cal1 = Calendar.getInstance()
+        val cal2 = cal1.clone() as Calendar
+        cal1.set(Calendar.HOUR_OF_DAY,  hour)
+        cal1.set(Calendar.MINUTE, minute)
+        cal2.set(Calendar.HOUR_OF_DAY, time.hour)
+        cal2.set(Calendar.MINUTE, time.minute)
+        return (cal2.timeInMillis - cal1.timeInMillis) / 60000
+    }
 }
