@@ -29,8 +29,10 @@ import com.nairobi.absensi.R
 import com.nairobi.absensi.types.Absence
 import com.nairobi.absensi.types.AbsenceModel
 import com.nairobi.absensi.types.AbsenceType
+import com.nairobi.absensi.types.Date
 import com.nairobi.absensi.types.User
 import com.nairobi.absensi.types.UserModel
+import com.nairobi.absensi.ui.components.FormFieldDate
 import com.nairobi.absensi.ui.components.SimpleAppbar
 import com.nairobi.absensi.ui.theme.Purple
 
@@ -40,8 +42,9 @@ fun ManageAbsence(navController: NavController? = null) {
     val context = LocalContext.current
     val absences = remember { mutableStateOf(ArrayList<Absence>()) }
     val users = remember { mutableStateOf(HashMap<String, User>()) }
+    val filter = remember { mutableStateOf(Date()) }
 
-    LaunchedEffect("") {
+    LaunchedEffect("manageabsence") {
         UserModel().getUsers({true}) {
             it.forEach { user ->
                 users.value[user.id] = user
@@ -63,13 +66,22 @@ fun ManageAbsence(navController: NavController? = null) {
             modifier = Modifier
                 .fillMaxWidth()
         )
+        // Filter
+        FormFieldDate(
+            value = filter.value,
+            onValueChange = { filter.value = it },
+            label = context.getString(R.string.filter),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
         // Column
         Column(
             Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            absences.value.forEach {
+            absences.value.filter { it.date == filter.value }.forEach {
                 // Card
                 Card(
                     colors = CardDefaults.cardColors(
@@ -97,9 +109,9 @@ fun ManageAbsence(navController: NavController? = null) {
                         }
                         val status: Pair<Color, String> = when(it.type) {
                             AbsenceType.UNKNOWN -> Color.Gray to context.getString(R.string.bolos)
-                            AbsenceType.HOLIDAY -> Color.Green to context.getString(R.string.libur)
+                            AbsenceType.HOLIDAY -> Color.Red to context.getString(R.string.libur)
                             AbsenceType.LEAVE -> Color.Blue to context.getString(R.string.cuti)
-                            AbsenceType.WORK -> Color.Red to context.getString(R.string.kerja)
+                            AbsenceType.WORK -> Color.Green to context.getString(R.string.kerja)
                         }
                         Text(
                             status.second,

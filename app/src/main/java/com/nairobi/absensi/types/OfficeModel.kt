@@ -30,7 +30,7 @@ class OfficeModel {
 
     // Update office
     fun updateOffice(office: Office, callback: (Boolean) -> Unit) {
-        col.document("data").update(office.map()).addOnSuccessListener {
+        col.document("data").set(office.map()).addOnSuccessListener {
             callback(true)
         }.addOnFailureListener {
             callback(false)

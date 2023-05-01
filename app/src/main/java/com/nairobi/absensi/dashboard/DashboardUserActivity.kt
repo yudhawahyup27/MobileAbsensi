@@ -6,9 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.nairobi.absensi.LoginActivity
 import com.nairobi.absensi.R
 import com.nairobi.absensi.dashboard.user.DashboardUserHome
@@ -19,8 +21,10 @@ import com.nairobi.absensi.dashboard.user.LeaveRequest
 import com.nairobi.absensi.dashboard.user.OvertimeWork
 import com.nairobi.absensi.dashboard.user.Work
 import com.nairobi.absensi.types.Auth
+import com.nairobi.absensi.types.LeaveRequestModel
 import com.nairobi.absensi.ui.theme.AbsensiTheme
 
+// Dashboard user activity
 class DashboardUserActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,8 +87,20 @@ class DashboardUserActivity : ComponentActivity() {
                 Leave(navController)
             }
             // Leave Request
-            composable(context.getString(R.string.leave_request)) {
-                LeaveRequest(navController)
+            composable(
+                "${context.getString(R.string.leave_request)}/{${context.getString(R.string.id)}}",
+                arguments = listOf(
+                    navArgument(context.getString(R.string.id)) { type = NavType.StringType }
+                )
+            ) {
+                val idarg = it.arguments?.getString(context.getString(R.string.id))
+                var id: String? = null
+                if (idarg.isNullOrEmpty() || idarg == "0") {
+                    id = null
+                } else {
+                    id = idarg
+                }
+                LeaveRequest(navController, id)
             }
             // Overtime
             composable(context.getString(R.string.overtime)) {

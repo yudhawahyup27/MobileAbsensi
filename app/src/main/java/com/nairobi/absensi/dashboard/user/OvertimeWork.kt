@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.nairobi.absensi.R
 import com.nairobi.absensi.types.Auth
+import com.nairobi.absensi.types.Date
 import com.nairobi.absensi.types.OvertimeModel
 import com.nairobi.absensi.types.OvertimeStatus
 import com.nairobi.absensi.types.Time
@@ -22,42 +23,61 @@ fun OvertimeWork(navController: NavController? = null) {
 
     LaunchedEffect("overtime") {
         val loading = loadingDialog(context)
+        OvertimeModel().getOvertimeByUserId(user.id) {overtimes ->
+            overtimes.filter { it.status == OvertimeStatus.PENDING }
+                .forEach { overtime ->
+                    if (!overtime.date.isToday() && overtime.date.before(Date())) {
+                        overtime.status = OvertimeStatus.REJECTED
+                        OvertimeModel().updateOvertime(overtime) {}
+                    }
+                }
+        }
         OvertimeModel().getOvertimeByUserId(user.id) { overtimes ->
-            val today = overtimes.filter { it.date.isToday() }
-            if (today.isEmpty()) {
+            val todo = overtimes.filter { it.status == OvertimeStatus.PENDING && it.date.isToday() }
+            if (todo.isEmpty()) {
                 loading.dismissWithAnimation()
                 dialogError(
                     context,
                     context.getString(R.string.gagal),
                     context.getString(R.string.overtime_date_error)
-                )
-                navController?.popBackStack()
+                ) {
+                    navController?.popBackStack()
+                }
             } else {
-                val overtime = today.find { it.status != OvertimeStatus.PENDING }
-                val time = Time()
-                if (overtime == null || time.before(overtime.start) || time.after(overtime.end)) {
-                    if (time.after(overtime!!.end)) {
-                        overtime.status = OvertimeStatus.REJECTED
-                        OvertimeModel().updateOvertime(overtime) {
+                val overtime = todo.first()
+                if (overtime.end.before(Time())) {
+                    overtime.status = OvertimeStatus.REJECTED
+                    OvertimeModel().updateOvertime(overtime) {
+                        loading.dismissWithAnimation()
+                        dialogError(
+                            context,
+                            context.getString(R.string.gagal),
+                            context.getString(R.string.overtime_date_error)
+                        ) {
+                            navController?.popBackStack()
                         }
                     }
+                } else if (overtime.start.after(Time())) {
                     loading.dismissWithAnimation()
                     dialogError(
                         context,
                         context.getString(R.string.gagal),
-                        context.getString(R.string.overtime_date_error),
-                    )
-                    navController?.popBackStack()
+                        context.getString(R.string.work_time_error_before)
+                    ) {
+                        navController?.popBackStack()
+                    }
                 } else {
-                    loading.dismissWithAnimation()
                     isNearOffice(user, context, navController!!) {
                         overtime.status = OvertimeStatus.APPROVED
                         OvertimeModel().updateOvertime(overtime) {
+                            loading.dismissWithAnimation()
                             dialogSuccess(
                                 context,
                                 context.getString(R.string.sukses),
                                 context.getString(R.string.absen_sukses)
-                            )
+                            ) {
+                                navController?.popBackStack()
+                            }
                         }
                     }
                 }

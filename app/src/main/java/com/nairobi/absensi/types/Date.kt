@@ -64,6 +64,17 @@ class Date(
         return _cal.after(date._cal)
     }
 
+    // Override '==' to only match year, month and day
+    override fun equals(other: Any?): Boolean {
+        return if (other is Date) {
+            _cal.get(Calendar.YEAR) == other._cal.get(Calendar.YEAR) &&
+                    _cal.get(Calendar.MONTH) == other._cal.get(Calendar.MONTH) &&
+                    _cal.get(Calendar.DATE) == other._cal.get(Calendar.DATE)
+        } else {
+            false
+        }
+    }
+
     // Check if date is today
     fun isToday(): Boolean {
         val cal = Calendar.getInstance()
@@ -75,5 +86,23 @@ class Date(
     // Check if date is sunday
     fun isSunday(): Boolean {
         return _cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
+    }
+
+    // Check if date is within a range
+    fun inRange(from: Date, to: Date): Boolean {
+        return _cal.after(from._cal) && _cal.before(to._cal)
+    }
+
+    companion object {
+        fun range(from: Date, to: Date): ArrayList<Date> {
+            val dates = ArrayList<Date>()
+            val oneDayInUnix = 86400000
+            var current = from
+            while (current.before(to)) {
+                dates.add(current)
+                current = Date(current.unix() + oneDayInUnix)
+            }
+            return dates
+        }
     }
 }

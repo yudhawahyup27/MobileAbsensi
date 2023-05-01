@@ -105,4 +105,15 @@
     <string name="overtime_date_error">Kamu tidak memiliki tugas lembur hari ini</string>
     <string name="absen_sukses">Absen telah berhasil</string>
     <string name="alasan">Alasan</string>
+    <string name="pilih_lokasi">Pilih Lokasi</string>
+    <string name="update">Update</string>
+    <string name="setujui">Setujui</string>
+    <string name="tolak">Tolak</string>
+    <string name="filter">filter</string>
+    <string name="add_overtime">add_overtime</string>
+    <string name="tanggal">tanggal</string>
+    <string name="user_not_found">User %1$s tidak di temukan</string>
+    <string name="face_not_found">Wajah tidak terdeteksi</string>
+    <string name="photo_not_found">User tidak memiliki photo</string>
+    <string name="absen_berhasil">Absen berhasil</string>
 </resources>

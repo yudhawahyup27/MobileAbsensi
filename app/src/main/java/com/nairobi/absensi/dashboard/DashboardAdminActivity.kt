@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.nairobi.absensi.LoginActivity
 import com.nairobi.absensi.R
+import com.nairobi.absensi.dashboard.admin.AddOvertime
 import com.nairobi.absensi.dashboard.admin.AddUser
 import com.nairobi.absensi.dashboard.admin.DashboardAdminHome
 import com.nairobi.absensi.dashboard.admin.EditUser
@@ -94,6 +95,10 @@ class DashboardAdminActivity : ComponentActivity() {
             // Manage overtime
             composable(context.getString(R.string.manage_overtime)) {
                 ManageOvertime(navController)
+            }
+            // Add overtime
+            composable(context.getString(R.string.add_overtime)) {
+                AddOvertime(navController)
             }
             // Manage office
             composable(context.getString(R.string.manage_office)) {

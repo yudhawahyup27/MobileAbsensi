@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +41,7 @@ import com.nairobi.absensi.ui.theme.Orange
 import com.nairobi.absensi.ui.theme.Purple
 
 // Leave
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun Leave(navController: NavController? = null) {
@@ -90,6 +92,13 @@ fun Leave(navController: NavController? = null) {
                 history.value.forEach { data ->
                     // Card
                     Card(
+                        onClick = {
+                            if (data.status == LeaveRequestStatus.PENDING) {
+                                navController?.navigate(
+                                    "${context.getString(R.string.leave_request)}/${data.id}"
+                                )
+                            }
+                        },
                         colors = CardDefaults.cardColors(
                             containerColor = Color.White
                         ),
@@ -113,10 +122,12 @@ fun Leave(navController: NavController? = null) {
                                 LeaveRequestStatus.REJECTED -> context.getString(R.string.ditolak) to Color.Red
                                 LeaveRequestStatus.APPROVED -> context.getString(R.string.disetujui) to Color.Green
                             }
+                            // Column
                             Column() {
                                 Text("From: ${data.start.string()}")
                                 Text("To: ${data.end.string()}")
                             }
+                            // Text
                             Text(
                                 text,
                                 color = Color.White,
@@ -133,9 +144,10 @@ fun Leave(navController: NavController? = null) {
                 }
             }
         }
+        // Fab
         FloatingActionButton(
             onClick = {
-                navController?.navigate(context.getString(R.string.leave_request))
+                navController?.navigate("${context.getString(R.string.leave_request)}/${"0"}")
             },
             containerColor = Color.White,
             contentColor = Color.Black,

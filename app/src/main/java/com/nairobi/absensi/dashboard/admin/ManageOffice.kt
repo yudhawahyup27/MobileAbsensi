@@ -37,7 +37,6 @@ import com.nairobi.absensi.ui.theme.Purple
 @Composable
 fun ManageOffice(navController: NavController? = null) {
     val context = LocalContext.current
-    var loaded by remember { mutableStateOf(false) }
     val model = OfficeModel()
     var address by remember { mutableStateOf(Address()) }
     var startTime by remember { mutableStateOf(Time()) }
@@ -106,7 +105,7 @@ fun ManageOffice(navController: NavController? = null) {
                     data.endTime = endTime
 
                     val loading = SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE)
-                    loading.setTitleText(context.getString(R.string.loading))
+                    loading.titleText = context.getString(R.string.loading)
                     loading.setCancelable(false)
                     loading.show()
                     model.updateOffice(data) {

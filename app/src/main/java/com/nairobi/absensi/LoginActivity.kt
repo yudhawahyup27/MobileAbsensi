@@ -237,7 +237,7 @@ class LoginActivity : ComponentActivity() {
             Button(
                 onClick = {
                     val loading = SweetAlertDialog(this@LoginActivity, SweetAlertDialog.PROGRESS_TYPE)
-                    loading.setTitleText(context.getString(R.string.loading))
+                    loading.titleText = context.getString(R.string.loading)
                     loading.setCancelable(false)
                     loading.show()
 

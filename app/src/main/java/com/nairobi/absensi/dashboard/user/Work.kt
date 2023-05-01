@@ -3,9 +3,7 @@ package com.nairobi.absensi.dashboard.user
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Base64
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
@@ -13,7 +11,8 @@ import androidx.navigation.NavController
 import com.google.android.gms.location.LocationServices
 import com.nairobi.absensi.R
 import com.nairobi.absensi.api.getHolidayData
-import com.nairobi.absensi.neuralnet.FaceRecognition
+import com.nairobi.absensi.neuralnetwork.FaceDetector
+import com.nairobi.absensi.neuralnetwork.FaceRecognition
 import com.nairobi.absensi.types.Absence
 import com.nairobi.absensi.types.AbsenceModel
 import com.nairobi.absensi.types.AbsenceType
@@ -33,6 +32,7 @@ import com.schaefer.livenesscamerax.domain.model.CameraLens
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.navigation.LivenessEntryPoint
+import java.util.Base64
 
 // Work
 @Composable
@@ -40,19 +40,34 @@ fun Work(navController: NavController? = null) {
     val context = LocalContext.current
     val user = Auth.user!!
 
-    LaunchedEffect("first") {
+    LaunchedEffect("work") {
         pendingLeaveRequest(user, context, navController!!) {
             alreadyAbsence(user, context, navController) {
                 isHoliday(user, context, navController) {
                     isWorkTime(user, context, navController) {
                         isNearOffice(user, context, navController) {
                             verifyFace(user, context, navController) {
-                                dialogSuccess(
-                                    context,
-                                    context.getString(R.string.sukses),
-                                    "Terimakasih sudah melakukan absen"
-                                ) {
-                                    navController.popBackStack()
+                                val absence = Absence()
+                                absence.type = AbsenceType.WORK
+                                absence.userId = user.id
+                                AbsenceModel().addAbsence(absence) {
+                                    if (!it) {
+                                        dialogError(
+                                            context,
+                                            context.getString(R.string.gagal),
+                                            context.getString(R.string.kesalahan_sistem),
+                                        ) {
+                                            navController.popBackStack()
+                                        }
+                                    } else {
+                                        dialogSuccess(
+                                            context,
+                                            context.getString(R.string.sukses),
+                                            context.getString(R.string.absen_berhasil),
+                                        ) {
+                                            navController.popBackStack()
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -66,20 +81,70 @@ fun Work(navController: NavController? = null) {
 // Verify face
 fun verifyFace(user: User, context: Context, navController: NavController, callback: () -> Unit) {
     val loading = loadingDialog(context)
-    LivenessEntryPoint.startLiveness(
-        cameraSettings = CameraSettings(
-            cameraLens = CameraLens.DEFAULT_FRONT_CAMERA,
-            livenessStepList = arrayListOf(
-                StepLiveness.STEP_LUMINOSITY,
-                StepLiveness.STEP_BLINK,
-                StepLiveness.STEP_SMILE,
-            )
-        ),
-        context = context,
-    ) { result ->
-        result.createdBySteps?.let { steps ->
+    StorageModel().getFileAsBitmap(user.id) {
+        if (it == null) {
             loading.dismissWithAnimation()
-            callback()
+            dialogError(
+                context,
+                context.getString(R.string.gagal),
+                context.getString(R.string.photo_not_found)
+            ) {
+                navController.popBackStack()
+            }
+        } else {
+            LivenessEntryPoint.startLiveness(
+                context = context,
+                cameraSettings = CameraSettings(
+                    cameraLens = CameraLens.DEFAULT_FRONT_CAMERA,
+                    livenessStepList = arrayListOf(
+                        StepLiveness.STEP_SMILE,
+                    )
+                )
+            ) { result ->
+                if (result.error != null || result.createdBySteps == null || result.createdBySteps!!.isEmpty()) {
+                    loading.dismissWithAnimation()
+                    dialogError(
+                        context,
+                        context.getString(R.string.gagal),
+                        context.getString(R.string.face_error)
+                    ) {
+                        navController.popBackStack()
+                    }
+                } else {
+                    val recognition = FaceRecognition(context, 112)
+                    val current = recognition.recognize(it)[0]
+                    recognition.register(user.id, current)
+                    val face = Base64.getDecoder().decode(result.createdBySteps!![0].fileBase64)
+                    val faceBitmap = BitmapFactory.decodeByteArray(face, 0, face.size)
+                    FaceDetector().detect(faceBitmap) { success, image ->
+                        if (!success) {
+                            loading.dismissWithAnimation()
+                            dialogError(
+                                context,
+                                context.getString(R.string.gagal),
+                                context.getString(R.string.face_error)
+                            ) {
+                                navController.popBackStack()
+                            }
+                        } else {
+                            val sim = recognition.recognize(image!!)[0]
+                            if (sim.distance < 1) {
+                                loading.dismissWithAnimation()
+                                callback()
+                            } else {
+                                loading.dismissWithAnimation()
+                                dialogError(
+                                    context,
+                                    context.getString(R.string.gagal),
+                                    context.getString(R.string.face_error)
+                                ) {
+                                    navController.popBackStack()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -87,7 +152,6 @@ fun verifyFace(user: User, context: Context, navController: NavController, callb
 // Check if user location is near office
 fun isNearOffice(user: User, context: Context, navController: NavController, callback: () -> Unit) {
     val loading = loadingDialog(context)
-    val prov = LocationServices.getFusedLocationProviderClient(context)
     if (context.checkSelfPermission(
             Manifest.permission.ACCESS_FINE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(
@@ -99,32 +163,39 @@ fun isNearOffice(user: User, context: Context, navController: NavController, cal
             context,
             context.getString(R.string.gagal),
             context.getString(R.string.location_permission_error)
-        )
-        return
-    }
-    prov.lastLocation.addOnSuccessListener { loc ->
-        val userAddress = Address(loc)
-        OfficeModel().getOffice { data ->
-            if (!userAddress.near(data.address, 500)) {
-                loading.dismissWithAnimation()
-                dialogError(
-                    context,
-                    context.getString(R.string.gagal),
-                    context.getString(R.string.office_distance_error)
-                )
-                navController.popBackStack()
-            } else {
-                loading.dismissWithAnimation()
-                callback()
+        ) {
+            navController.popBackStack()
+        }
+    } else {
+        val prov = LocationServices.getFusedLocationProviderClient(context)
+        prov.lastLocation.addOnSuccessListener { loc ->
+            val userAddress = Address(loc)
+            OfficeModel().getOffice { data ->
+                if (!userAddress.near(data.address, 500)) {
+                    loading.dismissWithAnimation()
+                    dialogError(
+                        context,
+                        context.getString(R.string.gagal),
+                        context.getString(R.string.office_distance_error)
+                    ) {
+                        navController.popBackStack()
+                    }
+                } else {
+                    loading.dismissWithAnimation()
+                    callback()
+                }
             }
         }
-    }
-    prov.lastLocation.addOnFailureListener {
-        dialogError(
-            context,
-            context.getString(R.string.gagal),
-            context.getString(R.string.location_error)
-        )
+        prov.lastLocation.addOnFailureListener {
+            loading.dismissWithAnimation()
+            dialogError(
+                context,
+                context.getString(R.string.gagal),
+                context.getString(R.string.location_error)
+            ) {
+                navController.popBackStack()
+            }
+        }
     }
 }
 
@@ -144,8 +215,9 @@ fun isHoliday(user: User, context: Context, navController: NavController, callba
                     context,
                     context.getString(R.string.gagal),
                     context.getString(R.string.holiday_error)
-                )
-                navController.popBackStack()
+                ) {
+                    navController.popBackStack()
+                }
             }
         } else {
             loading.dismissWithAnimation()
@@ -165,8 +237,9 @@ fun isWorkTime(user: User, context: Context, navController: NavController, callb
                 context,
                 context.getString(R.string.gagal),
                 context.getString(R.string.work_time_error_before)
-            )
-            navController.popBackStack()
+            ) {
+                navController.popBackStack()
+            }
         } else if (now.after(data.endTime)) {
             val absence = Absence()
             absence.date = Date()
@@ -178,8 +251,9 @@ fun isWorkTime(user: User, context: Context, navController: NavController, callb
                     context,
                     context.getString(R.string.gagal),
                     context.getString(R.string.work_time_error_after)
-                )
-                navController.popBackStack()
+                ) {
+                    navController.popBackStack()
+                }
             }
         } else {
             loading.dismissWithAnimation()
@@ -198,14 +272,15 @@ fun pendingLeaveRequest(
     val loading = loadingDialog(context)
     LeaveRequestModel().getLeaveRequestByUser(user.id) { data ->
         loading.dismissWithAnimation()
-        val pending = data.filter { it.status == LeaveRequestStatus.PENDING }
+        val pending = data.filter { it.status == LeaveRequestStatus.PENDING && it.isWithin() }
         if (pending.isNotEmpty()) {
             dialogError(
                 context,
                 context.getString(R.string.gagal),
                 context.getString(R.string.request_pending_error)
-            )
-            navController.popBackStack()
+            ) {
+                navController.popBackStack()
+            }
         } else {
             callback()
         }
@@ -228,8 +303,9 @@ fun alreadyAbsence(
                 context,
                 context.getString(R.string.gagal),
                 context.getString(R.string.already_absence_error)
-            )
-            navController.popBackStack()
+            ) {
+                navController.popBackStack()
+            }
         } else {
             callback()
         }

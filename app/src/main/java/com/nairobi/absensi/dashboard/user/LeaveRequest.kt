@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -27,16 +28,31 @@ import com.nairobi.absensi.ui.components.FormFieldDate
 import com.nairobi.absensi.ui.components.SimpleAppbar
 import com.nairobi.absensi.ui.components.dialogError
 import com.nairobi.absensi.ui.components.dialogSuccess
+import com.nairobi.absensi.ui.components.loadingDialog
 import com.nairobi.absensi.ui.theme.Purple
 
 // Leave Request
 @Composable
-fun LeaveRequest(navController: NavController? = null) {
+fun LeaveRequest(navController: NavController? = null, id: String? = null) {
     val context = LocalContext.current
 
     val startTime = remember { mutableStateOf(Date()) }
     val endTime = remember { mutableStateOf(Date()) }
     val reason = remember { mutableStateOf(TextFieldValue("")) }
+    val request = remember { mutableStateOf<com.nairobi.absensi.types.LeaveRequest?>(null) }
+
+    LaunchedEffect("load") {
+        id?.let { reqId ->
+            LeaveRequestModel().getLeaveRequest(reqId) {
+                it?.let { req ->
+                    request.value = req
+                    startTime.value = req.start
+                    endTime.value = req.end
+                    reason.value = TextFieldValue(req.reason)
+                }
+            }
+        }
+    }
 
     // Column
     Column(
@@ -84,9 +100,7 @@ fun LeaveRequest(navController: NavController? = null) {
             // Submit
             Button(
                 onClick = {
-                    val loading = SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE)
-                    loading.titleText = context.getString(R.string.loading)
-                    loading.setCancelable(false)
+                    val loading = loadingDialog(context)
                     loading.show()
 
                     LeaveRequestModel().getLeaveRequestByUser(Auth.user!!.id) { requests ->
@@ -123,22 +137,45 @@ fun LeaveRequest(navController: NavController? = null) {
                             leaveRequest.start = startTime.value
                             leaveRequest.end = endTime.value
                             leaveRequest.userId = Auth.user!!.id
-                            LeaveRequestModel().setLeaveRequest(leaveRequest) {
-                                loading.dismissWithAnimation()
-                                if (it) {
-                                    dialogSuccess(
-                                        context,
-                                        context.getString(R.string.sukses),
-                                        context.getString(R.string.leave_request_success),
-                                    ) {
-                                        navController?.popBackStack()
+                            leaveRequest.reason = reason.value.text
+
+                            if (request.value != null) {
+                                LeaveRequestModel().updateLeaveRequest(leaveRequest) {
+                                    loading.dismissWithAnimation()
+                                    if (it) {
+                                        dialogSuccess(
+                                            context,
+                                            context.getString(R.string.sukses),
+                                            context.getString(R.string.leave_request_success),
+                                        ) {
+                                            navController?.popBackStack()
+                                        }
+                                    } else {
+                                        dialogError(
+                                            context,
+                                            context.getString(R.string.gagal),
+                                            context.getString(R.string.kesalahan_sistem),
+                                        )
                                     }
-                                } else {
-                                    dialogError(
-                                        context,
-                                        context.getString(R.string.gagal),
-                                        context.getString(R.string.kesalahan_sistem),
-                                    )
+                                }
+                            } else {
+                                LeaveRequestModel().setLeaveRequest(leaveRequest) {
+                                    loading.dismissWithAnimation()
+                                    if (it) {
+                                        dialogSuccess(
+                                            context,
+                                            context.getString(R.string.sukses),
+                                            context.getString(R.string.leave_request_success),
+                                        ) {
+                                            navController?.popBackStack()
+                                        }
+                                    } else {
+                                        dialogError(
+                                            context,
+                                            context.getString(R.string.gagal),
+                                            context.getString(R.string.kesalahan_sistem),
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -148,7 +185,10 @@ fun LeaveRequest(navController: NavController? = null) {
                     .fillMaxWidth()
                     .padding(top = 20.dp)
             ) {
-                Text(context.getString(R.string.kirim), color = Color.White)
+                Text(
+                    if (request.value != null) context.getString(R.string.update) else context.getString(R.string.kirim),
+                    color = Color.White
+                )
             }
         }
     }

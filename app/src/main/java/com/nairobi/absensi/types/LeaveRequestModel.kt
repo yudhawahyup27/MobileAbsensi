@@ -62,4 +62,13 @@ class LeaveRequestModel {
             callback(false)
         }
     }
+
+    // Update leave request
+    fun updateLeaveRequest(request: LeaveRequest, callback: (Boolean) -> Unit) {
+        col.document(request.id).update(request.toMap()).addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
+    }
 }

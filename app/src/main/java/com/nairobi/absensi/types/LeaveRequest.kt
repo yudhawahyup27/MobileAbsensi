@@ -52,4 +52,9 @@ class LeaveRequest {
             "reason" to reason
         )
     }
+
+    // Check if today is within the leave request
+    fun isWithin(): Boolean {
+        return start.isToday() || end.isToday() || Date().inRange(start, end)
+    }
 }

@@ -65,4 +65,15 @@ class OvertimeModel {
             callback(false)
         }
     }
+
+    // Add overtime
+    fun addOvertime(overtime: Overtime, callback: (Boolean) -> Unit) {
+        val map = overtime.toMap()
+        map.remove("id")
+        col.add(map).addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
+    }
 }

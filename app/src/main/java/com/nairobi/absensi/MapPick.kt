@@ -1,8 +1,9 @@
 package com.nairobi.absensi
 
-import android.annotation.SuppressLint
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,9 +20,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationServices
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapInitOptions
@@ -33,15 +36,17 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.nairobi.absensi.ui.components.dialogError
 import com.nairobi.absensi.ui.theme.Purple
 import com.nairobi.absensi.utils.bitmapFromDrawableRes
 
+// Map pick activity
 class MapPick : ComponentActivity() {
     private lateinit var mapView: MapView
     private lateinit var pointAnotationManager: PointAnnotationManager
     private lateinit var pointAnotationOptions: PointAnnotationOptions
-    var lat = 0.0
-    var lon = 0.0
+    private var lat = 0.0
+    private var lon = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +68,9 @@ class MapPick : ComponentActivity() {
         setClickListener()
 
         setContent {
+            val context = LocalContext.current
+
+            // Column
             Column(
                 Modifier
                     .fillMaxSize()
@@ -78,7 +86,7 @@ class MapPick : ComponentActivity() {
 
                     // Title
                     Text(
-                        text = "Pilih Lokasi",
+                        text = context.getString(R.string.pilih_lokasi),
                         color = Color.White,
                         modifier = Modifier
                             .constrainAs(title) {
@@ -103,7 +111,7 @@ class MapPick : ComponentActivity() {
                                 end.linkTo(parent.end)
                             }
                     ) {
-                        Text(text = "Simpan")
+                        Text(context.getString(R.string.simpan))
                     }
                 }
                 ConstraintLayout(
@@ -179,8 +187,16 @@ class MapPick : ComponentActivity() {
     }
 
     // Get current location
-    @SuppressLint("MissingPermission")
     private fun getCurrentLocation(callback: (Pair<Double, Double>) -> Unit) {
+        if (!checkPermission()) {
+            dialogError(
+                this,
+                getString(R.string.gagal),
+                getString(R.string.location_permission_error),
+            ) {
+                requestPermission()
+            }
+        }
         val locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         val location = locationProviderClient.lastLocation
         location.addOnSuccessListener {
@@ -188,6 +204,29 @@ class MapPick : ComponentActivity() {
             lon = it.longitude
             callback(it.latitude to it.longitude)
         }
+    }
+
+    // Check location permission
+    private fun checkPermission(): Boolean {
+        return !(ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED)
+    }
+
+    // Request location permission
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
+            1
+        )
     }
 
     // Finish activity and send location to previous activity

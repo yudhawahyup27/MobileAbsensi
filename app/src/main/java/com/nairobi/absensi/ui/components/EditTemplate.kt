@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.nairobi.absensi.R
+import com.nairobi.absensi.neuralnetwork.FaceDetector
 import com.nairobi.absensi.types.Address
 import com.nairobi.absensi.types.Auth
 import com.nairobi.absensi.types.Date
@@ -257,7 +258,7 @@ private fun saveUser(
     callback: () -> Unit
 ) {
     val loading = SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE)
-    loading.setTitleText("${context.getString(R.string.saving)}...")
+    loading.titleText = "${context.getString(R.string.saving)}..."
     loading.setCancelable(false)
     loading.show()
 
@@ -303,26 +304,36 @@ private fun saveUser(
                                 context.getString(R.string.kesalahan_sistem)
                             )
                         } else {
-                            storage.uploadWithUri(
-                                context,
-                                id,
-                                photo
-                            ) { uploaded ->
-                                if (!uploaded) {
+                            FaceDetector().detectFromURI(context, photo) { success, face ->
+                                if (!success) {
                                     loading.dismissWithAnimation()
                                     dialogError(
                                         context,
                                         context.getString(R.string.gagal),
-                                        context.getString(R.string.kesalahan_sistem)
+                                        context.getString(R.string.face_not_found)
                                     )
                                 } else {
-                                    loading.dismissWithAnimation()
-                                    dialogSuccess(
-                                        context,
-                                        context.getString(R.string.sukses),
-                                        context.getString(R.string.user_dibuat)
-                                    ) {
-                                        callback()
+                                    storage.uploadBitmap(
+                                        id,
+                                        face!!
+                                    ) { uploaded ->
+                                        if (!uploaded) {
+                                            loading.dismissWithAnimation()
+                                            dialogError(
+                                                context,
+                                                context.getString(R.string.gagal),
+                                                context.getString(R.string.kesalahan_sistem)
+                                            )
+                                        } else {
+                                            loading.dismissWithAnimation()
+                                            dialogSuccess(
+                                                context,
+                                                context.getString(R.string.sukses),
+                                                context.getString(R.string.user_dibuat)
+                                            ) {
+                                                callback()
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -332,23 +343,54 @@ private fun saveUser(
             }
         } else {
             if (photo != data.id) {
-                storage.uploadWithUri(context, data.id, photo) {}
-            }
-            model.updateUser(data) { success ->
-                loading.dismissWithAnimation()
-                if (!success) {
-                    dialogError(
-                        context,
-                        context.getString(R.string.gagal),
-                        context.getString(R.string.kesalahan_sistem)
-                    )
-                } else {
-                    dialogSuccess(
-                        context,
-                        context.getString(R.string.sukses),
-                        context.getString(R.string.user_diupdate)
-                    ) {
-                        callback()
+                FaceDetector().detectFromURI(context, photo) { success, face ->
+                    if (!success) {
+                        loading.dismissWithAnimation()
+                        dialogError(
+                            context,
+                            context.getString(R.string.gagal),
+                            context.getString(R.string.face_not_found)
+                        )
+                    } else {
+                        storage.uploadBitmap(data.id, face!!) {
+                            model.updateUser(data) { success ->
+                                loading.dismissWithAnimation()
+                                if (!success) {
+                                    dialogError(
+                                        context,
+                                        context.getString(R.string.gagal),
+                                        context.getString(R.string.kesalahan_sistem)
+                                    )
+                                } else {
+                                    dialogSuccess(
+                                        context,
+                                        context.getString(R.string.sukses),
+                                        context.getString(R.string.user_diupdate)
+                                    ) {
+                                        callback()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                model.updateUser(data) { success ->
+                    loading.dismissWithAnimation()
+                    if (!success) {
+                        dialogError(
+                            context,
+                            context.getString(R.string.gagal),
+                            context.getString(R.string.kesalahan_sistem)
+                        )
+                    } else {
+                        dialogSuccess(
+                            context,
+                            context.getString(R.string.sukses),
+                            context.getString(R.string.user_diupdate)
+                        ) {
+                            callback()
+                        }
                     }
                 }
             }
@@ -359,9 +401,9 @@ private fun saveUser(
 // Delete user
 private fun deleteUser(context: Context, data: User, callback: () -> Unit) {
     val prompt = SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
-    prompt.setTitleText(context.getString(R.string.peringatan))
-    prompt.setContentText(context.getString(R.string.delete_user_prompt))
-    prompt.setConfirmText(context.getString(R.string.ya))
+    prompt.titleText = context.getString(R.string.peringatan)
+    prompt.contentText = context.getString(R.string.delete_user_prompt)
+    prompt.confirmText = context.getString(R.string.ya)
     prompt.setCancelButton(context.getString(R.string.tidak)) {
         prompt.dismissWithAnimation()
     }
@@ -375,6 +417,7 @@ private fun deleteUser(context: Context, data: User, callback: () -> Unit) {
                     context.getString(R.string.kesalahan_sistem)
                 )
             } else {
+                StorageModel().deleteFile(data.id) {}
                 dialogSuccess(
                     context,
                     context.getString(R.string.sukses),

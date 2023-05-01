@@ -16,6 +16,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,7 +32,11 @@ import com.nairobi.absensi.types.Absence
 import com.nairobi.absensi.types.AbsenceModel
 import com.nairobi.absensi.types.AbsenceType
 import com.nairobi.absensi.types.Auth
+import com.nairobi.absensi.types.Overtime
+import com.nairobi.absensi.types.OvertimeModel
+import com.nairobi.absensi.types.OvertimeStatus
 import com.nairobi.absensi.ui.components.SimpleAppbar
+import com.nairobi.absensi.ui.theme.Orange
 import com.nairobi.absensi.ui.theme.Purple
 
 // History
@@ -40,6 +45,12 @@ fun History(navController: NavController? = null) {
     val context = LocalContext.current
     val user = Auth.user!!
     val history = remember { mutableStateOf(ArrayList<Absence>()) }
+    val overtimes = remember { mutableStateOf(ArrayList<Overtime>()) }
+
+    LaunchedEffect("history") {
+        OvertimeModel().getAllOvertime { overtimes.value = it }
+        AbsenceModel().getAbsences { history.value = it }
+    }
 
     // Layout
     Column(
@@ -61,7 +72,10 @@ fun History(navController: NavController? = null) {
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            history.value.forEach { h ->
+            history.value.sortBy { h -> h.date.unix()}
+            overtimes.value.sortBy { h -> h.date.unix()}
+            history.value
+                .forEach { h ->
                 // Card
                 Card(
                     colors = CardDefaults.cardColors(
@@ -84,9 +98,9 @@ fun History(navController: NavController? = null) {
                     ) {
                         val status: Pair<Color, String> = when(h.type) {
                             AbsenceType.UNKNOWN -> Color.Gray to context.getString(R.string.bolos)
-                            AbsenceType.HOLIDAY -> Color.Green to context.getString(R.string.libur)
+                            AbsenceType.HOLIDAY -> Color.Red to context.getString(R.string.libur)
                             AbsenceType.LEAVE -> Color.Blue to context.getString(R.string.cuti)
-                            AbsenceType.WORK -> Color.Red to context.getString(R.string.kerja)
+                            AbsenceType.WORK -> Color.Green to context.getString(R.string.kerja)
                         }
 
                         // Column
@@ -107,10 +121,52 @@ fun History(navController: NavController? = null) {
                     }
                 }
             }
-        }
-    }
+            overtimes.value
+                .forEach { h ->
+                    // Card
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White,
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp,
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        // Row
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val status: Pair<Color, String> = when(h.status) {
+                                OvertimeStatus.APPROVED  -> Pair(Color.Green, context.getString(R.string.disetujui))
+                                OvertimeStatus.PENDING   -> Pair(Orange, context.getString(R.string.pending))
+                                OvertimeStatus.REJECTED  -> Pair(Color.Red, context.getString(R.string.ditolak))
+                            }
 
-    AbsenceModel().getAbsenceByUserId(user.id) {absences ->
-        history.value = absences
+                            // Column
+                            Column {
+                                Text(user.email)
+                                Text(h.date.string())
+                            }
+                            Text(
+                                "${context.getString(R.string.lembur)} ${status.second}",
+                                color = Color.White,
+                                modifier = Modifier
+                                    .background(
+                                        status.first,
+                                        shape = MaterialTheme.shapes.large.copy(CornerSize(4.dp))
+                                    )
+                                    .padding(4.dp)
+                            )
+                        }
+                    }
+                }
+        }
     }
 }
