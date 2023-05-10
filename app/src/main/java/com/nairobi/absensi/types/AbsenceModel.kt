@@ -65,4 +65,18 @@ class AbsenceModel {
             callback(false)
         }
     }
+
+    // Update multiple absence
+    fun updateAbsences(absences: ArrayList<Absence>, callback: (Boolean) -> Unit) {
+        val batch = Firebase.firestore.batch()
+        absences.forEach { absence ->
+            val doc = col.document(absence.id)
+            batch.update(doc, absence.map())
+        }
+        batch.commit().addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
+    }
 }

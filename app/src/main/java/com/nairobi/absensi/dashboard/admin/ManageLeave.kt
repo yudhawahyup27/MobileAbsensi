@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,12 +20,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cn.pedant.SweetAlert.SweetAlertDialog
@@ -37,6 +42,7 @@ import com.nairobi.absensi.types.LeaveRequestModel
 import com.nairobi.absensi.types.LeaveRequestStatus
 import com.nairobi.absensi.types.User
 import com.nairobi.absensi.types.UserModel
+import com.nairobi.absensi.ui.components.FormField
 import com.nairobi.absensi.ui.components.SimpleAppbar
 import com.nairobi.absensi.ui.components.dialogError
 import com.nairobi.absensi.ui.components.dialogSuccess
@@ -51,6 +57,7 @@ fun ManageLeave(navController: NavController? = null) {
     val context = LocalContext.current
     val leaves = remember { mutableStateOf(ArrayList<LeaveRequest>()) }
     val users = remember { mutableStateOf(HashMap<String, User>()) }
+    var searchValue by remember { mutableStateOf(TextFieldValue()) }
 
     LaunchedEffect("loaduser") {
         UserModel().getUsers({ true }) {
@@ -74,13 +81,33 @@ fun ManageLeave(navController: NavController? = null) {
             modifier = Modifier
                 .fillMaxWidth()
         )
+        // Search field
+        FormField(
+            value = searchValue,
+            leadingIcon = Icons.Default.Search,
+            label = context.getString(R.string.cari),
+            onValueChange = { searchValue = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
         // Column
         Column(
             Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            leaves.value.forEach {
+            leaves.value
+                .filter {
+                    val user = users.value[it.userId]
+                    if (user != null) {
+                        user.name.contains(searchValue.text, true) ||
+                                user.email.contains(searchValue.text, true)
+                    } else {
+                        true
+                    }
+                }
+                .forEach {
                 // Card
                 Card(
                     onClick = {

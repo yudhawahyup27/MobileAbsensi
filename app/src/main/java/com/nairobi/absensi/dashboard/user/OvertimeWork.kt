@@ -67,7 +67,7 @@ fun OvertimeWork(navController: NavController? = null) {
                         navController?.popBackStack()
                     }
                 } else {
-                    isNearOffice(user, context, navController!!) {
+                    isNearOffice(context, navController!!) {
                         overtime.status = OvertimeStatus.APPROVED
                         OvertimeModel().updateOvertime(overtime) {
                             loading.dismissWithAnimation()

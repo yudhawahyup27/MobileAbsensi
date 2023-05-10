@@ -22,6 +22,8 @@ fun SimpleAppbar(
     navController: NavController? = null,
     title: String = "",
     background: Color = Color.Transparent,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    trailingOnClick: () -> Unit = {},
     modifier: Modifier
 ) {
     // Row
@@ -30,7 +32,7 @@ fun SimpleAppbar(
             .fillMaxWidth()
             .background(background)
     ) {
-        val (titleText, back) = createRefs()
+        val (titleText, back, trailing) = createRefs()
         // Back button
         IconButton(
             onClick = {
@@ -60,5 +62,21 @@ fun SimpleAppbar(
                 end.linkTo(parent.end)
             }
         )
+        // Trailing button
+        trailingIcon?.let {
+            IconButton(
+                onClick = trailingOnClick,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.constrainAs(trailing) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+            ) {
+                it()
+            }
+        }
     }
 }

@@ -20,6 +20,7 @@ fun AddUser(navController: NavController? = null, role: UserRole) {
         navController,
         "${context.getString(R.string.tambah)} $text",
         mode = EditTemplateMode.ADD,
-        defaultRole = role
+        defaultRole = role,
+        isAdminDashboard = true,
     )
 }

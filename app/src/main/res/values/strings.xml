@@ -116,4 +116,22 @@
     <string name="face_not_found">Wajah tidak terdeteksi</string>
     <string name="photo_not_found">User tidak memiliki photo</string>
     <string name="absen_berhasil">Absen berhasil</string>
+    <string name="cari">cari</string>
+    <string name="exportdata">Export data</string>
+    <string name="export_data">export_data</string>
+    <string name="akun">Akun</string>
+    <string name="out">out</string>
+    <string name="absen_keluar">Absen keluar</string>
+    <string name="account">account</string>
+    <string name="sedang_kerja">sedang kerja</string>
+    <string name="forgot_password">Lupa password?</string>
+    <string name="reset_password">Reset password</string>
+    <string name="password_baru">Password baru</string>
+    <string name="reset_password_text">Untuk verifikasi kepemilikan akun, silahkan masukan nip anda.</string>
+    <string name="cancel">Batal</string>
+    <string name="error_reset_password">Tidak dapat memvalidasi email dan nip yang anda berikan</string>
+    <string name="success_reset_password">Password berhasil di reset</string>
+    <string name="error_system">Sistem error, silahkan coba lagi nanti</string>
+    <string name="export">Export</string>
+    <string name="berhasil_diunduh">Data berhasil di unduh</string>
 </resources>

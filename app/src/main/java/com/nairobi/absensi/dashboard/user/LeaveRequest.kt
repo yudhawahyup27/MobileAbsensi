@@ -113,13 +113,16 @@ fun LeaveRequest(navController: NavController? = null, id: String? = null) {
                                     message = context.getString(R.string.request_pending_error)
                                 }
                             }
-                            if (request.end.before(startTime.value) || request.start.after(endTime.value)) {
+                            if (startTime.value.inRange(request.start, request.end) || endTime.value.inRange(
+                                    request.start,
+                                    request.end
+                                )) {
                                 if (allowed) {
                                     allowed = false
                                     message = context.getString(R.string.request_date_error)
                                 }
                             }
-                            if (request.start.before(Date()) || request.end.before(Date())) {
+                            if (startTime.value.before(Date()) || endTime.value.before(Date())) {
                                 if (allowed) {
                                     allowed = false
                                     message = context.getString(R.string.request_past_error)

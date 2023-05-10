@@ -32,6 +32,9 @@ import com.nairobi.absensi.types.Absence
 import com.nairobi.absensi.types.AbsenceModel
 import com.nairobi.absensi.types.AbsenceType
 import com.nairobi.absensi.types.Auth
+import com.nairobi.absensi.types.Date
+import com.nairobi.absensi.types.Office
+import com.nairobi.absensi.types.OfficeModel
 import com.nairobi.absensi.types.Overtime
 import com.nairobi.absensi.types.OvertimeModel
 import com.nairobi.absensi.types.OvertimeStatus
@@ -46,10 +49,12 @@ fun History(navController: NavController? = null) {
     val user = Auth.user!!
     val history = remember { mutableStateOf(ArrayList<Absence>()) }
     val overtimes = remember { mutableStateOf(ArrayList<Overtime>()) }
+    val office = remember { mutableStateOf(Office()) }
 
     LaunchedEffect("history") {
         OvertimeModel().getAllOvertime { overtimes.value = it }
         AbsenceModel().getAbsences { history.value = it }
+        OfficeModel().getOffice { office.value = it }
     }
 
     // Layout
@@ -101,12 +106,21 @@ fun History(navController: NavController? = null) {
                             AbsenceType.HOLIDAY -> Color.Red to context.getString(R.string.libur)
                             AbsenceType.LEAVE -> Color.Blue to context.getString(R.string.cuti)
                             AbsenceType.WORK -> Color.Green to context.getString(R.string.kerja)
+                            AbsenceType.ONWORK -> Color.Green to context.getString(R.string.sedang_kerja)
                         }
 
                         // Column
                         Column {
                             Text(user.email)
-                            Text(h.date.string())
+                            Text("Masuk: ${h.date.string(true)}")
+                            if (h.endDate != null) {
+                                Text("Keluar: ${h.endDate!!.string(true)}")
+                                Text("Durasi: ${h.date.hoursBetween(h.endDate!!)} jam")
+                            } else {
+                                val end = h.date
+                                end.time = office.value.endTime
+                                Text("Durasi: ${h.date.hoursBetween(end)} jam")
+                            }
                         }
                         Text(
                             status.second,
@@ -152,7 +166,11 @@ fun History(navController: NavController? = null) {
                             // Column
                             Column {
                                 Text(user.email)
-                                Text(h.date.string())
+                                Text("Masuk: ${h.date.string(true)}")
+                                val end = Date()
+                                end.time = h.end
+                                Text("Keluar: ${end.string(true)}")
+                                Text("Durasi: ${h.date.hoursBetween(end)} jam")
                             }
                             Text(
                                 "${context.getString(R.string.lembur)} ${status.second}",

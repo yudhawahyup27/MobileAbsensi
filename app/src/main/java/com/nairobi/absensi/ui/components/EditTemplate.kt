@@ -54,6 +54,7 @@ fun EditTemplate(
     mode: EditTemplateMode = EditTemplateMode.ADD,
     defaultRole: UserRole = UserRole.USER,
     showDelete: Boolean = false,
+    isAdminDashboard: Boolean = false,
 ) {
     val context = LocalContext.current
     val storage = StorageModel()
@@ -78,6 +79,38 @@ fun EditTemplate(
         storage.checkFile(it.id) { exist ->
             if (exist) {
                 photo = it.id
+            }
+        }
+    }
+
+    val showPassword = {
+        when (mode) {
+            EditTemplateMode.EDIT -> {
+                if (isAdminDashboard) {
+                    user!!.role == UserRole.ADMIN
+                } else {
+                    true
+                }
+            }
+            EditTemplateMode.ADD -> defaultRole == UserRole.ADMIN
+        }
+    }
+
+    val getPassword = {
+        when (mode) {
+            EditTemplateMode.EDIT -> {
+                if (isAdminDashboard && user!!.role == UserRole.USER) {
+                    user!!.password
+                } else {
+                    password.text
+                }
+            }
+            EditTemplateMode.ADD -> {
+                if (defaultRole == UserRole.ADMIN) {
+                    password.text
+                } else {
+                    "123456"
+                }
             }
         }
     }
@@ -124,15 +157,17 @@ fun EditTemplate(
                         .fillMaxWidth()
                         .padding(16.dp)
                 )
-                // Password field
-                FormField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = context.getString(R.string.password),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
+                if (showPassword()) {
+                    // Password field
+                    FormField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = context.getString(R.string.password),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+                }
                 // Name field
                 FormField(
                     value = name,
@@ -200,7 +235,7 @@ fun EditTemplate(
                             data = user!!
                         }
                         data.email = email.text
-                        data.password = password.text
+                        data.password = getPassword()
                         data.name = name.text
                         data.phone = phone.text
                         data.nip = nip.text

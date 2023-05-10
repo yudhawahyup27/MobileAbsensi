@@ -66,6 +66,21 @@ class OvertimeModel {
         }
     }
 
+    // Update multiple overtime
+    fun updateMultipleOvertime(overtime: ArrayList<Overtime>, callback: (Boolean) -> Unit) {
+        val batch = Firebase.firestore.batch()
+        overtime.forEach {
+            val map = it.toMap()
+            map.remove("id")
+            batch.update(col.document(it.id), map)
+        }
+        batch.commit().addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
+    }
+
     // Add overtime
     fun addOvertime(overtime: Overtime, callback: (Boolean) -> Unit) {
         val map = overtime.toMap()

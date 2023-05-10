@@ -1,5 +1,6 @@
 package com.nairobi.absensi.dashboard.admin
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,8 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -20,12 +23,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
@@ -36,7 +42,7 @@ import com.nairobi.absensi.types.OvertimeModel
 import com.nairobi.absensi.types.OvertimeStatus
 import com.nairobi.absensi.types.User
 import com.nairobi.absensi.types.UserModel
-import com.nairobi.absensi.ui.components.FormFieldDate
+import com.nairobi.absensi.ui.components.FormField
 import com.nairobi.absensi.ui.components.SimpleAppbar
 import com.nairobi.absensi.ui.theme.Orange
 import com.nairobi.absensi.ui.theme.Purple
@@ -48,6 +54,7 @@ fun ManageOvertime(navController: NavController? = null) {
     val overtimes = remember { mutableStateOf(ArrayList<Overtime>()) }
     val filter = remember { mutableStateOf(Date()) }
     val users = remember { mutableStateOf(HashMap<String, User>()) }
+    var searchValue by remember { mutableStateOf(TextFieldValue()) }
 
     LaunchedEffect("overtime") {
         UserModel().getUsers({ true }) {
@@ -66,13 +73,34 @@ fun ManageOvertime(navController: NavController? = null) {
             .background(Color.White)
             .fillMaxSize()
     ) {
-        val (appBar, filterField, content, fab) = createRefs()
+        val (appBar, searchField, content, fab) = createRefs()
 
         // Simple appbar
         SimpleAppbar(
             navController = navController,
             title = context.getString(R.string.lembur),
             background = Purple,
+            trailingIcon = {
+                Icon(
+                    Icons.Default.DateRange,
+                    contentDescription = null
+                )
+            },
+            trailingOnClick = {
+                DatePickerDialog(
+                    context,
+                    { _, year, month, dayOfMonth ->
+                        val date = Date()
+                        date.year = year
+                        date.month = month
+                        date.day = dayOfMonth
+                        filter.value = date
+                    },
+                    filter.value.year,
+                    filter.value.month - 1,
+                    filter.value.day
+                ).show()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .constrainAs(appBar) {
@@ -81,15 +109,16 @@ fun ManageOvertime(navController: NavController? = null) {
                     top.linkTo(parent.top)
                 }
         )
-        // Filter
-        FormFieldDate(
-            value = filter.value,
-            onValueChange = { filter.value = it },
-            label = context.getString(R.string.filter),
+        // Search field
+        FormField(
+            value = searchValue,
+            leadingIcon = Icons.Default.Search,
+            label = context.getString(R.string.cari),
+            onValueChange = { searchValue = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .constrainAs(filterField) {
+                .constrainAs(searchField) {
                     start.linkTo(parent.start)
                     top.linkTo(appBar.bottom)
                     end.linkTo(parent.end)
@@ -101,13 +130,22 @@ fun ManageOvertime(navController: NavController? = null) {
                 .fillMaxWidth()
                 .constrainAs(content) {
                     start.linkTo(parent.start)
-                    top.linkTo(filterField.bottom)
+                    top.linkTo(searchField.bottom)
                     end.linkTo(parent.end)
                 }
                 .verticalScroll(rememberScrollState())
         ) {
             overtimes.value
                 .filter { it.date == filter.value }
+                .filter {
+                    val user = users.value[it.userId]
+                    if (user != null) {
+                        user.name.contains(searchValue.text, true) ||
+                                user.email.contains(searchValue.text, true)
+                    } else {
+                        true
+                    }
+                }
                 .forEach { overtime ->
                     // Card
                     Card(
@@ -133,6 +171,7 @@ fun ManageOvertime(navController: NavController? = null) {
                                 Text(users.value[overtime.userId]?.name.toString())
                                 Text(users.value[overtime.userId]?.email.toString())
                                 Text(overtime.date.string(true))
+                                Text("${overtime.start.distanceHour(overtime.end)} jam")
                             }
                             val status: Pair<Color, String> = when (overtime.status) {
                                 OvertimeStatus.REJECTED -> Pair(

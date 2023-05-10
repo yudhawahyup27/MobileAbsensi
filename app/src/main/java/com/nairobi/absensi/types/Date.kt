@@ -21,7 +21,7 @@ class Date(
         }
 
     var month: Int
-        get() = _cal.get(Calendar.MONTH)
+        get() = _cal.get(Calendar.MONTH) + 1
         set(value) {
             _cal.set(Calendar.MONTH, value)
         }
@@ -91,6 +91,18 @@ class Date(
     // Check if date is within a range
     fun inRange(from: Date, to: Date): Boolean {
         return _cal.after(from._cal) && _cal.before(to._cal)
+    }
+
+    // Get hours between two dates
+    fun hoursBetween(to: Date): Int {
+        val diff = to._cal.timeInMillis - _cal.timeInMillis
+        return (diff / 1000 / 60 / 60).toInt()
+    }
+
+    // Get days between two dates
+    fun daysBetween(to: Date): Int {
+        val diff = to._cal.timeInMillis - _cal.timeInMillis
+        return (diff / 1000 / 60 / 60 / 24).toInt()
     }
 
     companion object {

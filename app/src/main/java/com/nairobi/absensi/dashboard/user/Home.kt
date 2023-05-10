@@ -39,7 +39,14 @@ import androidx.navigation.NavController
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.nairobi.absensi.R
 import com.nairobi.absensi.types.Auth
+import com.nairobi.absensi.types.Date
+import com.nairobi.absensi.types.Overtime
+import com.nairobi.absensi.types.OvertimeModel
+import com.nairobi.absensi.types.OvertimeStatus
+import com.nairobi.absensi.ui.components.dialogSuccess
 import com.nairobi.absensi.ui.theme.Orange
+import com.nairobi.absensi.ui.theme.Pink
+import com.nairobi.absensi.ui.theme.Purple
 
 // Card button
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,8 +121,29 @@ fun CardButton(
 @Composable
 fun DashboardUserHome(navController: NavController? = null) {
     val context = LocalContext.current
+    val user = Auth.user!!
 
     LaunchedEffect(context.getString(R.string.checkAbsence)) {
+        OvertimeModel().getOvertimeByUserId(user.id) {overtimes ->
+            val pending = overtimes.filter { it.status == OvertimeStatus.PENDING }
+            val mayBeNeedReject = ArrayList<Overtime>()
+            pending.forEach { x ->
+                if (Date().after(x.date)) {
+                    x.status = OvertimeStatus.REJECTED
+                    mayBeNeedReject.add(x)
+                }
+            }
+            OvertimeModel().updateMultipleOvertime(mayBeNeedReject) {
+                val today = pending.find { it.date.isToday() }
+                if (today != null) {
+                    dialogSuccess(
+                        context,
+                        "Pemberituan",
+                        "Anda memiliki lembur hari ini jam ${today.start.string()}, silahkan lakukan absensi lembur"
+                    )
+                }
+            }
+        }
     }
 
     // Layout
@@ -137,23 +165,6 @@ fun DashboardUserHome(navController: NavController? = null) {
                 }
         ) {
             val (setting, logout) = createRefs()
-            // Setting
-            IconButton(
-                onClick = {
-                    navController?.navigate(context.getString(R.string.profile))
-                },
-                modifier = Modifier
-                    .constrainAs(setting) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }
-            ) {
-                Icon(
-                    Icons.Filled.Settings,
-                    contentDescription = context.getString(R.string.setting),
-                )
-            }
             // Logout
             IconButton(
                 onClick = {
@@ -231,6 +242,16 @@ fun DashboardUserHome(navController: NavController? = null) {
                     background = R.drawable.ic_masuk,
                     modifier = Modifier
                 )
+                CardButton(
+                    onClick = {
+                        navController?.navigate(context.getString(R.string.out))
+                    },
+                    label = context.getString(R.string.absen_keluar),
+                    color = Purple,
+                    background = R.drawable.ic_masuk,
+                    modifier = Modifier
+                        .padding(top = 40.dp)
+                )
                 // Lembur
                 CardButton(
                     onClick = {
@@ -261,6 +282,17 @@ fun DashboardUserHome(navController: NavController? = null) {
                     label = context.getString(R.string.riwayat_absen),
                     color = Color.Red,
                     background = R.drawable.ic_history,
+                    modifier = Modifier
+                        .padding(top = 40.dp)
+                )
+                // Riwayat
+                CardButton(
+                    onClick = {
+                        navController?.navigate(context.getString(R.string.profile))
+                    },
+                    label = context.getString(R.string.profile),
+                    color = Pink,
+                    background = R.drawable.ic_masuk,
                     modifier = Modifier
                         .padding(top = 40.dp)
                 )

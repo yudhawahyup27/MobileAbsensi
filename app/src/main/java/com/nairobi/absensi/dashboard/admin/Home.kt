@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Domain
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.TableView
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -43,6 +44,7 @@ import com.nairobi.absensi.R
 import com.nairobi.absensi.types.Auth
 import com.nairobi.absensi.ui.theme.DarkGray
 import com.nairobi.absensi.ui.theme.Orange
+import com.nairobi.absensi.ui.theme.Pink
 import com.nairobi.absensi.ui.theme.Purple40
 
 // Card Button
@@ -224,6 +226,15 @@ fun DashboardAdminHome(navController: NavController? = null) {
                 .height(IntrinsicSize.Min)
                 .padding(vertical = 20.dp)
         ) {
+            // Export data
+            CardButton(
+                name = context.getString(R.string.exportdata),
+                icon = Icons.Default.TableView,
+                color = Pink,
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { navController?.navigate(context.getString(R.string.export_data)) }
+            )
             // Logout
             CardButton(
                 name = context.getString(R.string.keluar),

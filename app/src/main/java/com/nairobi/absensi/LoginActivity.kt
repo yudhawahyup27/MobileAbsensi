@@ -236,7 +236,8 @@ class LoginActivity : ComponentActivity() {
             // Submit button
             Button(
                 onClick = {
-                    val loading = SweetAlertDialog(this@LoginActivity, SweetAlertDialog.PROGRESS_TYPE)
+                    val loading =
+                        SweetAlertDialog(this@LoginActivity, SweetAlertDialog.PROGRESS_TYPE)
                     loading.titleText = context.getString(R.string.loading)
                     loading.setCancelable(false)
                     loading.show()
@@ -271,6 +272,25 @@ class LoginActivity : ComponentActivity() {
                     .padding(20.dp)
             ) {
                 Text(context.getString(R.string.login))
+            }
+            // Forgot password
+            Button(
+                onClick = {
+                    val intent = Intent(this@LoginActivity, ForgotActivity::class.java)
+                    startActivity(intent)
+                    this@LoginActivity.finish()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    disabledContainerColor = Color.Gray,
+                    containerColor = Color.White,
+                    contentColor = Purple
+                ),
+                contentPadding = PaddingValues(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            ) {
+                Text(context.getString(R.string.forgot_password))
             }
         }
     }

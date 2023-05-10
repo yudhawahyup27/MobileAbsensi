@@ -45,7 +45,8 @@ fun EditUser(navController: NavController? = null, role: UserRole, id: String) {
                 "${context.getString(R.string.edit)} $text",
                 state.user,
                 mode = EditTemplateMode.EDIT,
-                showDelete = id != Auth.user!!.id
+                showDelete = id != Auth.user!!.id,
+                isAdminDashboard = true,
             )
         }
     }

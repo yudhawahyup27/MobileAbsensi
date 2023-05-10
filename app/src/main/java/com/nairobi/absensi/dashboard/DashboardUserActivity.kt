@@ -18,6 +18,7 @@ import com.nairobi.absensi.dashboard.user.EditProfile
 import com.nairobi.absensi.dashboard.user.History
 import com.nairobi.absensi.dashboard.user.Leave
 import com.nairobi.absensi.dashboard.user.LeaveRequest
+import com.nairobi.absensi.dashboard.user.Out
 import com.nairobi.absensi.dashboard.user.OvertimeWork
 import com.nairobi.absensi.dashboard.user.Work
 import com.nairobi.absensi.types.Auth
@@ -81,6 +82,10 @@ class DashboardUserActivity : ComponentActivity() {
             // Work
             composable(context.getString(R.string.work)) {
                 Work(navController)
+            }
+            // Out
+            composable(context.getString(R.string.out)) {
+                Out(navController)
             }
             // Leave
             composable(context.getString(R.string.leave)) {

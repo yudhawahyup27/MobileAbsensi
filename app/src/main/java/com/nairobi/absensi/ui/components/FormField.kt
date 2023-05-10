@@ -169,7 +169,7 @@ fun FormFieldDate(
                         onValueChange(date)
                     },
                     value.year,
-                    value.month,
+                    value.month - 1,
                     value.day
                 ).show()
             },
@@ -298,7 +298,6 @@ fun FormFieldImage(
     label: String? = null,
     color: Color = Color.Black,
 ) {
-    val context = LocalContext.current
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val uri = it.data?.data

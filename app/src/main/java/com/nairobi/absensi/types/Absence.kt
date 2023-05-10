@@ -2,6 +2,7 @@ package com.nairobi.absensi.types
 
 // Absence type
 enum class AbsenceType {
+    ONWORK,
     WORK,
     LEAVE,
     HOLIDAY,
@@ -14,17 +15,20 @@ class Absence {
     var userId: String
     var type: AbsenceType
     var date: Date
+    var endDate: Date? = null
 
     constructor(
         _id: String = "",
         _userId: String = "",
         _type: AbsenceType = AbsenceType.UNKNOWN,
-        _date: Date = Date()
+        _date: Date = Date(),
+        _endDate: Date? = null
     ) {
         id = _id
         userId = _userId
         type = _type
         date = _date
+        endDate = _endDate
     }
 
     constructor(map: HashMap<String, Any>) {
@@ -36,6 +40,11 @@ class Absence {
         } else {
             Date()
         }
+        endDate = if (map["endDate"] != null && map["endDate"] != "") {
+            Date(map["endDate"] as Long)
+        } else {
+            null
+        }
     }
 
     // Get map representation of Absence
@@ -45,6 +54,7 @@ class Absence {
             "userId" to userId,
             "type" to type,
             "date" to date.unix(),
+            "endDate" to if (endDate != null) endDate!!.unix() else "",
         )
     }
 }

@@ -54,6 +54,8 @@ android {
 dependencies {
     def nav_version = "2.5.3"
 
+    implementation("org.apache.poi:poi:5.1.0")
+    implementation("org.apache.poi:poi-ooxml:5.1.0")
     implementation("org.tensorflow:tensorflow-lite:2.11.0")
     implementation("org.tensorflow:tensorflow-lite-gpu:2.11.0")
     implementation("org.tensorflow:tensorflow-lite-gpu-api:2.11.0")

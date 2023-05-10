@@ -45,6 +45,8 @@ class StorageModel {
             }.addOnFailureListener {
                 callback(byteArrayOf())
             }
+        }.addOnFailureListener {
+            callback(byteArrayOf())
         }
     }
 

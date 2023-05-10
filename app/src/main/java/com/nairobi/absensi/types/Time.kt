@@ -78,4 +78,9 @@ class Time(
         cal2.set(Calendar.MINUTE, time.minute)
         return (cal2.timeInMillis - cal1.timeInMillis) / 60000
     }
+
+    // Get how many hours between time and another time
+    fun distanceHour(to: Time): Long {
+        return distance(to) / 60
+    }
 }

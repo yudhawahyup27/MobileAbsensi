@@ -17,6 +17,7 @@ import com.nairobi.absensi.dashboard.admin.AddOvertime
 import com.nairobi.absensi.dashboard.admin.AddUser
 import com.nairobi.absensi.dashboard.admin.DashboardAdminHome
 import com.nairobi.absensi.dashboard.admin.EditUser
+import com.nairobi.absensi.dashboard.admin.ExportData
 import com.nairobi.absensi.dashboard.admin.ManageAbsence
 import com.nairobi.absensi.dashboard.admin.ManageLeave
 import com.nairobi.absensi.dashboard.admin.ManageOffice
@@ -103,6 +104,10 @@ class DashboardAdminActivity : ComponentActivity() {
             // Manage office
             composable(context.getString(R.string.manage_office)) {
                 ManageOffice(navController)
+            }
+            // Export data
+            composable(context.getString(R.string.export_data)) {
+                ExportData(navController)
             }
             // Add user
             composable(

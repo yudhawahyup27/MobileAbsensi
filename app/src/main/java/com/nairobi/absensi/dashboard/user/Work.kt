@@ -45,10 +45,10 @@ fun Work(navController: NavController? = null) {
             alreadyAbsence(user, context, navController) {
                 isHoliday(user, context, navController) {
                     isWorkTime(user, context, navController) {
-                        isNearOffice(user, context, navController) {
+                        isNearOffice(context, navController) {
                             verifyFace(user, context, navController) {
                                 val absence = Absence()
-                                absence.type = AbsenceType.WORK
+                                absence.type = AbsenceType.ONWORK
                                 absence.userId = user.id
                                 AbsenceModel().addAbsence(absence) {
                                     if (!it) {
@@ -150,7 +150,7 @@ fun verifyFace(user: User, context: Context, navController: NavController, callb
 }
 
 // Check if user location is near office
-fun isNearOffice(user: User, context: Context, navController: NavController, callback: () -> Unit) {
+fun isNearOffice(context: Context, navController: NavController, callback: () -> Unit) {
     val loading = loadingDialog(context)
     if (context.checkSelfPermission(
             Manifest.permission.ACCESS_FINE_LOCATION
