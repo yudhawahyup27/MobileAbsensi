@@ -1,20 +1,22 @@
 package com.nairobi.absensi.dashboard.admin
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.MenuItemColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -23,10 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nairobi.absensi.R
@@ -35,9 +37,7 @@ import com.nairobi.absensi.types.Overtime
 import com.nairobi.absensi.types.OvertimeModel
 import com.nairobi.absensi.types.OvertimeStatus
 import com.nairobi.absensi.types.Time
-import com.nairobi.absensi.types.User
 import com.nairobi.absensi.types.UserModel
-import com.nairobi.absensi.ui.components.FormField
 import com.nairobi.absensi.ui.components.FormFieldDate
 import com.nairobi.absensi.ui.components.FormFieldTime
 import com.nairobi.absensi.ui.components.SimpleAppbar
@@ -46,70 +46,53 @@ import com.nairobi.absensi.ui.components.dialogSuccess
 import com.nairobi.absensi.ui.components.loadingDialog
 import com.nairobi.absensi.ui.theme.Purple
 
-// Spinner
-@OptIn(ExperimentalMaterial3Api::class)
+// Dropdown list
 @Composable
-fun Spinner(
+fun DropdownList(
     expanded: Boolean = false,
-    updateExpand: (Boolean) -> Unit = {},
-    selectedOptionText: String = "",
-    updateSelectedOptionText: (String) -> Unit = {},
-    options: ArrayList<String>
+    list: ArrayList<String>,
+    request: (Boolean) -> Unit,
+    selected: (String) -> Unit
 ) {
-    ExposedDropdownMenuBox(
+    DropdownMenu(
         expanded = expanded,
-        onExpandedChange = { updateExpand(!expanded) },
+        onDismissRequest = { request(false) },
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
     ) {
-        TextField(
-            readOnly = true,
-            value = selectedOptionText,
-            onValueChange = { },
-            label = { Text("E-mail") },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = expanded
-                )
-            },
-            colors = ExposedDropdownMenuDefaults.textFieldColors()
-        )
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = {
-//                updateExpand(false)
-            }
-        ) {
-            options.forEach { selectionOption ->
-                DropdownMenuItem(text = {
-                    Text(text = "Asu")
-                }, onClick = {
-                    updateSelectedOptionText(selectionOption)
-                    updateExpand(false)
+        list.forEach {
+            DropdownMenuItem(
+                onClick = {
+                    selected(it)
+                    request(false)
                 },
-                )
-            }
+                text = { Text(text = it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+            )
         }
     }
 }
 
 // Add overtime
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun AddOvertime(navController: NavController? = null) {
     val context = LocalContext.current
 
-    var email by remember { mutableStateOf("") }
     var date by remember { mutableStateOf(Date()) }
     var startTime by remember { mutableStateOf(Time()) }
     var endTime by remember { mutableStateOf(Time()) }
-    var users by remember { mutableStateOf(ArrayList<String>()) }
-    var expanded by remember { mutableStateOf(true) }
+    val users by remember { mutableStateOf(ArrayList<String>()) }
+    var email by remember { mutableStateOf("user") }
+    var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect("loadUser") {
         UserModel().getUsers({!it.isAdmin}) {
-            it.forEach {
-                users.add(it.email)
+            it.forEach {user ->
+                users.add(user.email)
             }
         }
     }
@@ -135,16 +118,48 @@ fun AddOvertime(navController: NavController? = null) {
                 .padding(20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Debug
-            Text(expanded.toString() )
-            // Spinner
-            Spinner(
-                expanded = expanded,
-                updateExpand = {expanded = it},
-                selectedOptionText = email,
-                updateSelectedOptionText = {email = it},
-                options = users
+            // Text
+            Text(
+                text = email,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = {
+                        expanded = !expanded
+                    })
+                    // rounded border
+                    .border(
+                        width = 1.dp,
+                        color = Color.LightGray,
+                        shape = MaterialTheme.shapes.small
+                    )
+                    .padding(10.dp)
             )
+            // Dropdown
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+            ) {
+                users.forEach {
+                    DropdownMenuItem(
+                        onClick = {
+                            email = it
+                            expanded = false
+                        },
+                        text = {
+                            Text(
+                                text = it,
+                                color = Color.Black
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.White)
+                    )
+                }
+            }
             // Date
             FormFieldDate(
                 value = date,
@@ -204,7 +219,7 @@ fun AddOvertime(navController: NavController? = null) {
                                 overtimeData.start = startTime
                                 overtimeData.end = endTime
                                 overtimeData.userId = it.id
-                                OvertimeModel().addOvertime(overtimeData) {status ->
+                                OvertimeModel().addOvertime(overtimeData) { status ->
                                     loading.dismissWithAnimation()
                                     if (status) {
                                         dialogSuccess(
