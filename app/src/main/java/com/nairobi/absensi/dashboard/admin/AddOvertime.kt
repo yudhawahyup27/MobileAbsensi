@@ -9,8 +9,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +35,7 @@ import com.nairobi.absensi.types.Overtime
 import com.nairobi.absensi.types.OvertimeModel
 import com.nairobi.absensi.types.OvertimeStatus
 import com.nairobi.absensi.types.Time
+import com.nairobi.absensi.types.User
 import com.nairobi.absensi.types.UserModel
 import com.nairobi.absensi.ui.components.FormField
 import com.nairobi.absensi.ui.components.FormFieldDate
@@ -37,15 +46,73 @@ import com.nairobi.absensi.ui.components.dialogSuccess
 import com.nairobi.absensi.ui.components.loadingDialog
 import com.nairobi.absensi.ui.theme.Purple
 
+// Spinner
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Spinner(
+    expanded: Boolean = false,
+    updateExpand: (Boolean) -> Unit = {},
+    selectedOptionText: String = "",
+    updateSelectedOptionText: (String) -> Unit = {},
+    options: ArrayList<String>
+) {
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { updateExpand(!expanded) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+    ) {
+        TextField(
+            readOnly = true,
+            value = selectedOptionText,
+            onValueChange = { },
+            label = { Text("E-mail") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded
+                )
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors()
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+//                updateExpand(false)
+            }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(text = {
+                    Text(text = "Asu")
+                }, onClick = {
+                    updateSelectedOptionText(selectionOption)
+                    updateExpand(false)
+                },
+                )
+            }
+        }
+    }
+}
+
 // Add overtime
 @Composable
 fun AddOvertime(navController: NavController? = null) {
     val context = LocalContext.current
 
-    var email by remember { mutableStateOf(TextFieldValue("")) }
+    var email by remember { mutableStateOf("") }
     var date by remember { mutableStateOf(Date()) }
     var startTime by remember { mutableStateOf(Time()) }
     var endTime by remember { mutableStateOf(Time()) }
+    var users by remember { mutableStateOf(ArrayList<String>()) }
+    var expanded by remember { mutableStateOf(true) }
+
+    LaunchedEffect("loadUser") {
+        UserModel().getUsers({!it.isAdmin}) {
+            it.forEach {
+                users.add(it.email)
+            }
+        }
+    }
 
     // Column
     Column(
@@ -68,13 +135,15 @@ fun AddOvertime(navController: NavController? = null) {
                 .padding(20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Email
-            FormField(
-                value = email,
-                onValueChange = { email = it },
-                label = context.getString(R.string.email),
-                modifier = Modifier
-                    .fillMaxWidth()
+            // Debug
+            Text(expanded.toString() )
+            // Spinner
+            Spinner(
+                expanded = expanded,
+                updateExpand = {expanded = it},
+                selectedOptionText = email,
+                updateSelectedOptionText = {email = it},
+                options = users
             )
             // Date
             FormFieldDate(
@@ -108,7 +177,7 @@ fun AddOvertime(navController: NavController? = null) {
                 onClick = {
                     val loading = loadingDialog(context)
                     loading.show()
-                    if (email.text.isEmpty()) {
+                    if (email.isEmpty()) {
                         loading.dismissWithAnimation()
                         dialogError(
                             context,
@@ -118,7 +187,7 @@ fun AddOvertime(navController: NavController? = null) {
                     } else {
                         UserModel().getUser(
                             hashMapOf(
-                                "email" to email.text,
+                                "email" to email,
                             )
                         ) {
                             if (it == null) {
@@ -126,7 +195,7 @@ fun AddOvertime(navController: NavController? = null) {
                                 dialogError(
                                     context,
                                     context.getString(R.string.gagal),
-                                    context.getString(R.string.user_not_found, email.text)
+                                    context.getString(R.string.user_not_found, email)
                                 )
                             } else {
                                 val overtimeData = Overtime()

@@ -25,7 +25,11 @@ class UserModel {
     // Get user by id
     fun getUserById(id: String, callback: (User?) -> Unit) {
         col.document(id).get().addOnSuccessListener {
-            callback(docToUser(it))
+            if (it.exists()) {
+                callback(docToUser(it))
+            } else {
+                callback(null)
+            }
         }.addOnFailureListener {
             callback(null)
         }
