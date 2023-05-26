@@ -66,6 +66,15 @@ class AbsenceModel {
         }
     }
 
+    fun addAbsenceout(absence: Absence, callback: (Boolean) -> Unit) {
+        val map = absence.map()
+        map.remove("id")
+        col.add(map).addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
+    }
     // Update multiple absence
     fun updateAbsences(absences: ArrayList<Absence>, callback: (Boolean) -> Unit) {
         val batch = Firebase.firestore.batch()

@@ -13,7 +13,7 @@
     <string name="loading">Loading</string>
     <string name="sukses">Sukses</string>
     <string name="error">Error</string>
-    <string name="autentikasi_error">Autentikasi gagal</string>
+    <string name="autentikasi_error">Email atau password anda salah silakan cek kembali</string>
     <string name="login">Masuk</string>
     <string name="name">Name</string>
     <string name="phone">Phone</string>
@@ -58,6 +58,7 @@
     <string name="user">User</string>
     <string name="absensi">Absensi</string>
     <string name="cuti">Cuti</string>
+    <string name="Pulang">Pulang</string>
     <string name="lembur">Lembur</string>
     <string name="kantor">Kantor</string>
     <string name="keluar">Keluar</string>
@@ -93,6 +94,7 @@
     <string name="disetujui">disetujui</string>
     <string name="already_absence_error">Anda sudah absen hari ini</string>
     <string name="holiday_error">Hari ini adalah hari libur</string>
+    <string name="out_time_error_before">Waktu kerja belum selesai </string>
     <string name="work_time_error_before">Waktu kerja belum di mulai</string>
     <string name="work_time_error_after">Waktu kerja sudah berakhir</string>
     <string name="face_error">Verifikasi wajah gagal</string>

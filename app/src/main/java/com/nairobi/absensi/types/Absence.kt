@@ -4,6 +4,7 @@ package com.nairobi.absensi.types
 enum class AbsenceType {
     ONWORK,
     WORK,
+    OUT,
     LEAVE,
     HOLIDAY,
     UNKNOWN,

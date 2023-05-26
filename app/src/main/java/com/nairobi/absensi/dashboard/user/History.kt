@@ -105,6 +105,7 @@ fun History(navController: NavController? = null) {
                             AbsenceType.UNKNOWN -> Color.Gray to context.getString(R.string.bolos)
                             AbsenceType.HOLIDAY -> Color.Red to context.getString(R.string.libur)
                             AbsenceType.LEAVE -> Color.Blue to context.getString(R.string.cuti)
+                            AbsenceType.OUT -> Color.Blue to context.getString(R.string.out)
                             AbsenceType.WORK -> Color.Green to context.getString(R.string.kerja)
                             AbsenceType.ONWORK -> Color.Green to context.getString(R.string.sedang_kerja)
                         }

@@ -29,11 +29,5 @@ fun validateUser(context: Context, user: User): Pair<Boolean, String> {
     if (user.name.isEmpty()) {
         return false to context.getString(R.string.empty_name)
     }
-    if (user.nip.isEmpty()) {
-        return false to context.getString(R.string.empty_nip)
-    }
-    if (user.phone.isEmpty()) {
-        return false to context.getString(R.string.empty_phone)
-    }
     return true to ""
 }

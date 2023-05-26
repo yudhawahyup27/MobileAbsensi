@@ -166,6 +166,7 @@ fun ManageAbsence(navController: NavController? = null) {
                             AbsenceType.HOLIDAY -> Color.Red to context.getString(R.string.libur)
                             AbsenceType.LEAVE -> Color.Blue to context.getString(R.string.cuti)
                             AbsenceType.WORK -> Color.Green to context.getString(R.string.kerja)
+                             AbsenceType.OUT -> Color.Green to context.getString(R.string.Pulang)
                             AbsenceType.ONWORK -> Color.Green to context.getString(R.string.sedang_kerja)
                         }
                         Text(

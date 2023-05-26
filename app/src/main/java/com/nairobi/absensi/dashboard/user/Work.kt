@@ -97,7 +97,12 @@ fun verifyFace(user: User, context: Context, navController: NavController, callb
                 cameraSettings = CameraSettings(
                     cameraLens = CameraLens.DEFAULT_FRONT_CAMERA,
                     livenessStepList = arrayListOf(
+                        StepLiveness.STEP_BLINK,
                         StepLiveness.STEP_SMILE,
+                        StepLiveness.STEP_HEAD_FRONTAL,
+                        StepLiveness.STEP_LUMINOSITY,
+                        StepLiveness.STEP_HEAD_LEFT,
+                        StepLiveness.STEP_HEAD_RIGHT,
                     )
                 )
             ) { result ->
@@ -231,16 +236,7 @@ fun isWorkTime(user: User, context: Context, navController: NavController, callb
     val loading = loadingDialog(context)
     val now = Time()
     OfficeModel().getOffice { data ->
-        if (now.before(data.startTime)) {
-            loading.dismissWithAnimation()
-            dialogError(
-                context,
-                context.getString(R.string.gagal),
-                context.getString(R.string.work_time_error_before)
-            ) {
-                navController.popBackStack()
-            }
-        } else if (now.after(data.endTime)) {
+        if (now.after(data.endTime)) {
             val absence = Absence()
             absence.date = Date()
             absence.userId = user.id

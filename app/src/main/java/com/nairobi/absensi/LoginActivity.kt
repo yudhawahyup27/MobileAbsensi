@@ -1,6 +1,7 @@
 package com.nairobi.absensi
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -124,7 +125,12 @@ class LoginActivity : ComponentActivity() {
             )
             // Register fab
             FloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.link/wwgcfo"))
+                    val title = "Complete Action Using"
+                    val chooser = Intent.createChooser(intent, title)
+                    startActivity(chooser)
+                   },
                 shape = MaterialTheme.shapes.large.copy(
                     CornerSize(percent = 50)
                 ),
@@ -215,7 +221,8 @@ class LoginActivity : ComponentActivity() {
                     if (it.text.isEmpty()) {
                         passwordError = true
                         passwordErrorString = emptyPasswordError
-                    } else if (!validateLength(it.text, 6)) {
+                    }
+                    else if (!validateLength(it.text, 6)) {
                         passwordError = true
                         passwordErrorString = context.getString(R.string.length_error_password)
                     } else {

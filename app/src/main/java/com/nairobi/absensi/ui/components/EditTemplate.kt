@@ -1,12 +1,17 @@
 package com.nairobi.absensi.ui.components
 
 import android.content.Context
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -19,8 +24,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,7 +72,6 @@ fun EditTemplate(
     var password by remember { mutableStateOf(TextFieldValue("")) }
     var name by remember { mutableStateOf(TextFieldValue("")) }
     var phone by remember { mutableStateOf(TextFieldValue("")) }
-    var nip by remember { mutableStateOf(TextFieldValue("")) }
     var dob by remember { mutableStateOf(Date()) }
     var address by remember { mutableStateOf(Address()) }
     var photo by remember { mutableStateOf("") }
@@ -73,7 +81,6 @@ fun EditTemplate(
         password = TextFieldValue(it.password)
         name = TextFieldValue(it.name)
         phone = TextFieldValue(it.phone)
-        nip = TextFieldValue(it.nip)
         dob = it.dob
         address = it.address
         storage.checkFile(it.id) { exist ->
@@ -82,7 +89,7 @@ fun EditTemplate(
             }
         }
     }
-
+// Show Password
     val showPassword = {
         when (mode) {
             EditTemplateMode.EDIT -> {
@@ -93,6 +100,35 @@ fun EditTemplate(
                 }
             }
             EditTemplateMode.ADD -> defaultRole == UserRole.ADMIN
+        }
+    }
+//    Show Telepon
+    val showTelepon = {
+        when (mode) {
+            EditTemplateMode.EDIT -> {
+                if (isAdminDashboard) {
+                    user!!.role == UserRole.USER
+                } else {
+                    true
+                }
+            }
+            EditTemplateMode.ADD -> defaultRole == UserRole.USER
+        }
+
+    }
+// Show Location
+    val showLocation= {
+        when (mode) {
+            EditTemplateMode.EDIT -> {
+                if (isAdminDashboard) {
+                    user!!.role == UserRole.USER
+                } else {
+                   true
+                }
+            }
+            else -> {
+                false
+            }
         }
     }
 
@@ -147,6 +183,22 @@ fun EditTemplate(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
             ) {
+//                Photo Profil
+                val imageModifier = Modifier
+                    .padding(top = 10.dp, start = 80.dp)
+                    .size(150.dp)
+                    .border(1.dp, Color.Black, CircleShape)
+                    .clip(CircleShape)
+                    .padding(15.dp)
+
+                Image(
+                    painter = painterResource(id = R.drawable.profilphoto),
+                    contentDescription = "Photo Profil",
+                    contentScale = ContentScale.Fit,
+                    modifier = imageModifier
+
+                )
+
                 // Email field
                 FormField(
                     value = email,
@@ -177,26 +229,20 @@ fun EditTemplate(
                         .fillMaxWidth()
                         .padding(16.dp)
                 )
-                // Phone field
-                FormField(
-                    value = phone,
-                    onValueChange = { phone = it },
-                    label = context.getString(R.string.phone),
-                    keyboardType = KeyboardType.Phone,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-                // NIP field
-                FormField(
-                    value = nip,
-                    onValueChange = { nip = it },
-                    label = context.getString(R.string.nip),
-                    keyboardType = KeyboardType.Number,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
+
+                if (showTelepon()){
+                    // Phone field
+                    FormField(
+                        value = phone,
+                        onValueChange = { phone = it },
+                        label = context.getString(R.string.phone),
+                        keyboardType = KeyboardType.Phone,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+                }
+
                 // Date of birth field
                 FormFieldDate(
                     value = dob,
@@ -207,14 +253,18 @@ fun EditTemplate(
                         .padding(16.dp)
                 )
                 // Address field
-                FormFieldLocation(
-                    value = address,
-                    onValueChange = { address = it },
-                    label = context.getString(R.string.address),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
+                if (showLocation()){
+                    FormFieldLocation(
+                        value = address,
+                        onValueChange = { address = it },
+                        label = context.getString(R.string.address),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+                }
+
+
                 // Photo field
                 FormFieldImage(
                     value = photo,
@@ -238,7 +288,6 @@ fun EditTemplate(
                         data.password = getPassword()
                         data.name = name.text
                         data.phone = phone.text
-                        data.nip = nip.text
                         data.dob = dob
                         data.address = address
                         saveUser(context, data, mode, photo) {

@@ -16,8 +16,7 @@
     <uses-feature
         android:name="android.hardware.location.network"
         android:required="false" />
-    <uses-feature
-        android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera" />
 
     <application
         android:allowBackup="true"
@@ -29,6 +28,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Absensi"
         tools:targetApi="31">
+        <activity
+            android:name=".types.Outabsence"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
