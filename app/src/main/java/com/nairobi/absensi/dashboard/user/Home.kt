@@ -296,6 +296,16 @@ fun DashboardUserHome(navController: NavController? = null) {
                     modifier = Modifier
                         .padding(top = 40.dp)
                 )
+                CardButton(
+                    onClick = {
+                        navController?.navigate(context.getString(R.string.lembur_over))
+                    },
+                    label = context.getString(R.string.lembur_over),
+                    color = Pink,
+                    background = R.drawable.ic_masuk,
+                    modifier = Modifier
+                        .padding(top = 40.dp)
+                )
             }
         }
     }

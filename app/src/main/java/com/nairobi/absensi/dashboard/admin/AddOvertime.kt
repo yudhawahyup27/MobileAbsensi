@@ -88,7 +88,7 @@ fun AddOvertime(navController: NavController? = null) {
     val context = LocalContext.current
 
     var date by remember { mutableStateOf(Date()) }
-    var detail by remember { mutableStateOf(TextFieldValue("")) }
+    var detaillembur by remember { mutableStateOf(TextFieldValue("")) }
     var startTime by remember { mutableStateOf(Time()) }
     var endTime by remember { mutableStateOf(Time()) }
     val users by remember { mutableStateOf(ArrayList<String>()) }
@@ -169,12 +169,12 @@ fun AddOvertime(navController: NavController? = null) {
             }
             // NIP field
             FormField(
-                value = detail,
-                onValueChange = { detail = it },
-                label = context.getString(R.string.detail),
+                value = detaillembur,
+                onValueChange = { detaillembur = it },
+                label = context.getString(R.string.nip),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(top =20.dp)
             )
             // Date
             FormFieldDate(
@@ -234,7 +234,7 @@ fun AddOvertime(navController: NavController? = null) {
                                 overtimeData.status = OvertimeStatus.PENDING
                                 overtimeData.date = date
                                 overtimeData.start = startTime
-                                overtimeData.detail = detail.text
+                                overtimeData.detaillembur = detaillembur.text
                                 overtimeData.end = endTime
                                 overtimeData.userId = it.id
                                 OvertimeModel().addOvertime(overtimeData) { status ->

@@ -1,5 +1,6 @@
 package com.nairobi.absensi.dashboard.user
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -11,8 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +43,7 @@ import com.nairobi.absensi.types.OfficeModel
 import com.nairobi.absensi.types.Overtime
 import com.nairobi.absensi.types.OvertimeModel
 import com.nairobi.absensi.types.OvertimeStatus
+import com.nairobi.absensi.ui.components.FormField
 import com.nairobi.absensi.ui.components.SimpleAppbar
 import com.nairobi.absensi.ui.theme.Orange
 import com.nairobi.absensi.ui.theme.Purple
@@ -47,6 +53,7 @@ import com.nairobi.absensi.ui.theme.Purple
 fun History(navController: NavController? = null) {
     val context = LocalContext.current
     val user = Auth.user!!
+    val filter = remember { mutableStateOf(Date()) }
     val history = remember { mutableStateOf(ArrayList<Absence>()) }
     val overtimes = remember { mutableStateOf(ArrayList<Overtime>()) }
     val office = remember { mutableStateOf(Office()) }
@@ -77,14 +84,36 @@ fun History(navController: NavController? = null) {
             .background(Color.White)
             .fillMaxSize()
     ) {
-        // SimpleAppbar
+        // Simple Appbar
         SimpleAppbar(
             navController = navController,
-            title = context.getString(R.string.riwayat_absen),
+            title = context.getString(R.string.history),
             background = Purple,
+            trailingIcon = {
+                Icon(
+                    Icons.Default.DateRange,
+                    contentDescription = null
+                )
+            },
+            trailingOnClick = {
+                DatePickerDialog(
+                    context,
+                    { _, year, month, dayOfMonth ->
+                        val date = Date()
+                        date.year = year
+                        date.month = month
+                        date.day = dayOfMonth
+                        filter.value = date
+                    },
+                    filter.value.year,
+                    filter.value.month - 1,
+                    filter.value.day
+                ).show()
+            },
             modifier = Modifier
                 .fillMaxWidth()
         )
+
         // Column
         Column(
             Modifier

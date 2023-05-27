@@ -1,4 +1,4 @@
-package com.nairobi.absensi.dashboard.admin
+package com.nairobi.absensi.dashboard.user
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.background
@@ -36,7 +36,13 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.nairobi.absensi.R
+import com.nairobi.absensi.types.Absence
+import com.nairobi.absensi.types.AbsenceModel
+import com.nairobi.absensi.types.AbsenceType
+import com.nairobi.absensi.types.Auth
 import com.nairobi.absensi.types.Date
+import com.nairobi.absensi.types.Office
+import com.nairobi.absensi.types.OfficeModel
 import com.nairobi.absensi.types.Overtime
 import com.nairobi.absensi.types.OvertimeModel
 import com.nairobi.absensi.types.OvertimeStatus
@@ -46,10 +52,11 @@ import com.nairobi.absensi.ui.components.FormField
 import com.nairobi.absensi.ui.components.SimpleAppbar
 import com.nairobi.absensi.ui.theme.Orange
 import com.nairobi.absensi.ui.theme.Purple
+import org.apache.xmlbeans.impl.soap.Detail
 
-// Manage overtime
+// History
 @Composable
-fun ManageOvertime(navController: NavController? = null) {
+fun Detailovertime(navController: NavController? = null) {
     val context = LocalContext.current
     val overtimes = remember { mutableStateOf(ArrayList<Overtime>()) }
     val filter = remember { mutableStateOf(Date()) }
@@ -170,8 +177,8 @@ fun ManageOvertime(navController: NavController? = null) {
                             Column {
                                 Text(users.value[overtime.userId]?.name.toString())
                                 Text(users.value[overtime.userId]?.email.toString())
+
                                 Text(overtime.date.string(true))
-                                Text("${overtime.end.string(true)}")
                                 Text("${overtime.start.distanceHour(overtime.end)} jam")
                             }
                             val status: Pair<Color, String> = when (overtime.status) {

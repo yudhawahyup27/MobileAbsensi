@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.nairobi.absensi.LoginActivity
 import com.nairobi.absensi.R
 import com.nairobi.absensi.dashboard.user.DashboardUserHome
+import com.nairobi.absensi.dashboard.user.Detailovertime
 import com.nairobi.absensi.dashboard.user.EditProfile
 import com.nairobi.absensi.dashboard.user.History
 import com.nairobi.absensi.dashboard.user.Leave
@@ -86,6 +87,9 @@ class DashboardUserActivity : ComponentActivity() {
             // Out
             composable(context.getString(R.string.out)) {
                 Out(navController)
+            }
+            composable(context.getString(R.string.lembur_over)) {
+                Detailovertime(navController)
             }
             // Leave
             composable(context.getString(R.string.leave)) {

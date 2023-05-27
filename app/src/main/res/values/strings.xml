@@ -81,6 +81,7 @@
     <string name="overtime">overtime</string>
     <string name="absen_lembur">Absen Lembur</string>
     <string name="absen_cuti">Absen cuti</string>
+    <string name="detai_lembur">Detail Lembur</string>
     <string name="riwayat_absen">Riwayat absen</string>
     <string name="dari_tanggal">Dari Tanggal</string>
     <string name="sampai_tanggal">Sampai Tanggal</string>
@@ -123,6 +124,7 @@
     <string name="export_data">export_data</string>
     <string name="akun">Akun</string>
     <string name="out">out</string>
+    <string name="lembur_over">Lembur Over</string>
     <string name="absen_keluar">Absen keluar</string>
     <string name="account">account</string>
     <string name="sedang_kerja">sedang kerja</string>

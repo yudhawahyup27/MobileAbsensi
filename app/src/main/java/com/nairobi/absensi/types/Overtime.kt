@@ -14,11 +14,13 @@ class Overtime {
     var start: Time
     var end: Time
     var date: Date
+    var detaillembur: String
     var status: OvertimeStatus
 
     constructor(
         _id: String = "",
         _userId: String = "",
+        _detaillembur: String ="",
         _start: Time = Time(),
         _end: Time = Time(),
         _date: Date = Date(),
@@ -27,6 +29,7 @@ class Overtime {
         id = _id
         userId = _userId
         start = _start
+        detaillembur = _detaillembur
         end = _end
         date = _date
         status = _status
@@ -35,6 +38,7 @@ class Overtime {
     constructor(map: HashMap<String, Any>) {
         id = map.getOrDefault("id", "").toString()
         userId = map.getOrDefault("userId", "").toString()
+        detaillembur = map.getOrDefault("detaillembur", "").toString()
         start = Time(map.getOrDefault("start", Time().unix()).toString().toLong())
         end = Time(map.getOrDefault("end", Time().unix()).toString().toLong())
         date = Date(map.getOrDefault("date", Date().unix()).toString().toLong())
@@ -46,6 +50,7 @@ class Overtime {
         val map = HashMap<String, Any>()
         map["id"] = id
         map["userId"] = userId
+        map["detaillembur"] = detaillembur
         map["start"] = start.unix()
         map["end"] = end.unix()
         map["date"] = date.unix()
