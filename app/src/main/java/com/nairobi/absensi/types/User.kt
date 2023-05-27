@@ -13,6 +13,7 @@ class User {
     var email: String
     var password: String
     var phone: String
+    var nip: String
     var address: Address
     var role: UserRole
     var dob: Date
@@ -23,6 +24,7 @@ class User {
         _email: String = "",
         _password: String = "",
         _phone: String = "",
+        _nip: String = "",
         _address: Address = Address(),
         _role: UserRole = UserRole.USER,
         _dob: Date = Date()
@@ -32,6 +34,7 @@ class User {
         email = _email
         password = _password
         phone = _phone
+        nip = _nip
         address = _address
         role = _role
         dob = _dob
@@ -51,6 +54,7 @@ class User {
         email = map.getOrDefault("email", "").toString()
         password = map.getOrDefault("password", "").toString()
         phone = map.getOrDefault("phone", "").toString()
+        nip = map.getOrDefault("nip", "").toString()
         role = UserRole.valueOf(map.getOrDefault("role", "USER").toString())
         dob = Date(map.getOrDefault("dob", Date().unix()) as Long)
     }
@@ -67,6 +71,7 @@ class User {
             "email" to email,
             "password" to password,
             "phone" to phone,
+            "nip" to nip,
             "address" to address.map(),
             "role" to role,
             "dob" to dob.unix(),

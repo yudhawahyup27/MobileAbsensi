@@ -2,6 +2,8 @@ package com.nairobi.absensi.utils
 
 import android.content.Context
 import com.nairobi.absensi.R
+import com.nairobi.absensi.types.Auth
+import com.nairobi.absensi.types.Auth.Companion.user
 import com.nairobi.absensi.types.User
 
 // Validate email address
@@ -16,6 +18,7 @@ fun validateLength(string: String, lengthMin: Int, lengthMax: Int = 0): Boolean 
     } else {
         string.length in lengthMin..lengthMax
     }
+
 }
 
 // Validate user field
@@ -29,5 +32,9 @@ fun validateUser(context: Context, user: User): Pair<Boolean, String> {
     if (user.name.isEmpty()) {
         return false to context.getString(R.string.empty_name)
     }
+    if (user.nip.isEmpty()) {
+        return false to context.getString(R.string.empty_nip)
+    }
+
     return true to ""
 }

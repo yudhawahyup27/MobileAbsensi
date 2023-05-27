@@ -69,6 +69,7 @@ fun EditTemplate(
     val storage = StorageModel()
 
     var email by remember { mutableStateOf(TextFieldValue("")) }
+    var nip by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
     var name by remember { mutableStateOf(TextFieldValue("")) }
     var phone by remember { mutableStateOf(TextFieldValue("")) }
@@ -80,6 +81,7 @@ fun EditTemplate(
         email = TextFieldValue(it.email)
         password = TextFieldValue(it.password)
         name = TextFieldValue(it.name)
+        nip = TextFieldValue(it.nip)
         phone = TextFieldValue(it.phone)
         dob = it.dob
         address = it.address
@@ -116,6 +118,16 @@ fun EditTemplate(
         }
 
     }
+    // NIP field
+    FormField(
+        value = nip,
+        onValueChange = { nip = it },
+        label = context.getString(R.string.nip),
+        keyboardType = KeyboardType.Number,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
 // Show Location
     val showLocation= {
         when (mode) {
@@ -288,6 +300,7 @@ fun EditTemplate(
                         data.password = getPassword()
                         data.name = name.text
                         data.phone = phone.text
+                        data.nip = nip.text
                         data.dob = dob
                         data.address = address
                         saveUser(context, data, mode, photo) {
