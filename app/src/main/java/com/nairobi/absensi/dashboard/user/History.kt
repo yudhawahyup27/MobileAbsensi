@@ -51,10 +51,24 @@ fun History(navController: NavController? = null) {
     val overtimes = remember { mutableStateOf(ArrayList<Overtime>()) }
     val office = remember { mutableStateOf(Office()) }
 
-    LaunchedEffect("history") {
-        OvertimeModel().getAllOvertime { overtimes.value = it }
-        AbsenceModel().getAbsences { history.value = it }
-        OfficeModel().getOffice { office.value = it }
+    LaunchedEffect("userhistory") {
+        OvertimeModel().getAllOvertime {
+            it.forEach { ov ->
+                if (ov.userId == user.id) {
+                    overtimes.value.add(ov)
+                }
+            }
+        }
+        AbsenceModel().getAbsences {
+            it.forEach { ab ->
+                if (ab.userId == user.id) {
+                    history.value.add(ab)
+                }
+            }
+        }
+        OfficeModel().getOffice {
+            office.value = it
+        }
     }
 
     // Layout
@@ -112,8 +126,10 @@ fun History(navController: NavController? = null) {
 
                         // Column
                         Column {
+                            val d = h.date
+                            val t = d.time
                             Text(user.email)
-                            Text("Masuk: ${h.date.string(true)}")
+                            Text("Masuk: ${d.string(false)} ${t.string(true)}")
                             if (h.endDate != null) {
                                 Text("Keluar: ${h.endDate!!.string(true)}")
                                 Text("Durasi: ${h.date.hoursBetween(h.endDate!!)} jam")

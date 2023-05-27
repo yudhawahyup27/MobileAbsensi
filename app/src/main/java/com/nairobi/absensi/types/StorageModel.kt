@@ -11,7 +11,8 @@ import java.io.ByteArrayOutputStream
 
 // Storage model
 class StorageModel {
-    private val storage = Firebase.storage("gs://absen-1dc50.appspot.com")
+//    private val storage = Firebase.storage("gs://absen-1dc50.appspot.com")
+    private val storage = Firebase.storage("gs://freelance-absensi.appspot.com/")
     private val storageRef = storage.reference
 
     // Upload file to storage

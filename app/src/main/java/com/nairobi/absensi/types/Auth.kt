@@ -61,10 +61,9 @@ class Auth {
             UserModel().getUser(
                 hashMapOf(
                     "email" to email,
-                    "password" to password,
                 )
             ) {
-                if (it == null) {
+                if (it == null || it.password != password) {
                     callback(false)
                 } else {
                     _user = it
