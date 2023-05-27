@@ -29,8 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.mapbox.maps.extension.style.expressions.dsl.generated.string
 import com.nairobi.absensi.R
 import com.nairobi.absensi.types.Date
 import com.nairobi.absensi.types.Overtime
@@ -38,6 +41,7 @@ import com.nairobi.absensi.types.OvertimeModel
 import com.nairobi.absensi.types.OvertimeStatus
 import com.nairobi.absensi.types.Time
 import com.nairobi.absensi.types.UserModel
+import com.nairobi.absensi.ui.components.FormField
 import com.nairobi.absensi.ui.components.FormFieldDate
 import com.nairobi.absensi.ui.components.FormFieldTime
 import com.nairobi.absensi.ui.components.SimpleAppbar
@@ -45,6 +49,7 @@ import com.nairobi.absensi.ui.components.dialogError
 import com.nairobi.absensi.ui.components.dialogSuccess
 import com.nairobi.absensi.ui.components.loadingDialog
 import com.nairobi.absensi.ui.theme.Purple
+import org.apache.xmlbeans.impl.soap.Detail
 
 // Dropdown list
 @Composable
@@ -83,6 +88,7 @@ fun AddOvertime(navController: NavController? = null) {
     val context = LocalContext.current
 
     var date by remember { mutableStateOf(Date()) }
+    var detail by remember { mutableStateOf(TextFieldValue("")) }
     var startTime by remember { mutableStateOf(Time()) }
     var endTime by remember { mutableStateOf(Time()) }
     val users by remember { mutableStateOf(ArrayList<String>()) }
@@ -134,6 +140,7 @@ fun AddOvertime(navController: NavController? = null) {
                     )
                     .padding(10.dp)
             )
+
             // Dropdown
             DropdownMenu(
                 expanded = expanded,
@@ -160,6 +167,15 @@ fun AddOvertime(navController: NavController? = null) {
                     )
                 }
             }
+            // NIP field
+            FormField(
+                value = detail,
+                onValueChange = { detail = it },
+                label = context.getString(R.string.detail),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
             // Date
             FormFieldDate(
                 value = date,
@@ -169,6 +185,7 @@ fun AddOvertime(navController: NavController? = null) {
                     .fillMaxWidth()
                     .padding(top = 20.dp)
             )
+
             // Start time
             FormFieldTime(
                 value = startTime,
@@ -217,6 +234,7 @@ fun AddOvertime(navController: NavController? = null) {
                                 overtimeData.status = OvertimeStatus.PENDING
                                 overtimeData.date = date
                                 overtimeData.start = startTime
+                                overtimeData.detail = detail.text
                                 overtimeData.end = endTime
                                 overtimeData.userId = it.id
                                 OvertimeModel().addOvertime(overtimeData) { status ->
